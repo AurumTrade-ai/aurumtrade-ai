@@ -32,9 +32,20 @@
 
         <!-- Auth Form -->
         <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-xl shadow-lg">
-            <div id="name-field" class="hidden">
-                <label class="block text-xs font-semibold text-gray-400 mb-1">FULL NAME</label>
-                <input type="text" id="auth-name" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="John Doe">
+            <!-- First Name Field -->
+            <div id="firstname-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">FIRST NAME</label>
+                <input type="text" id="auth-firstname" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Rahul">
+            </div>
+            <!-- Last Name / Surname Field -->
+            <div id="lastname-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">LAST NAME / SURNAME</label>
+                <input type="text" id="auth-lastname" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Saini">
+            </div>
+            <!-- Unique Username Field -->
+            <div id="username-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">UNIQUE USERNAME</label>
+                <input type="text" id="auth-username" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="rahul9493" lowercase>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label>
@@ -44,6 +55,11 @@
                 <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
                 <input type="password" id="auth-password" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="******">
             </div>
+            <!-- Confirm Password Field -->
+            <div id="confirm-password-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label>
+                <input type="password" id="auth-confirm-password" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="******">
+            </div>
             <div id="referral-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">REFERRAL CODE (OPTIONAL)</label>
                 <input type="text" id="auth-ref" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="REF123">
@@ -52,13 +68,28 @@
         </form>
     </div>
 
+    <!-- ================= SIGN UP OTP VERIFICATION SCREEN ================= -->
+    <div id="signup-otp-screen" class="hidden space-y-6 mt-10 text-center">
+        <div class="card-bg p-6 rounded-xl shadow-lg space-y-4">
+            <h2 class="text-xl font-bold gold-text"><i class="fa-solid fa-envelope-shield"></i> Verify Your Gmail</h2>
+            <p class="text-xs text-gray-400">We have sent a 6-digit security OTP to your registered Gmail address. Please verify to activate your trading account.</p>
+            
+            <div>
+                <input type="text" id="signup-otp-input" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-lg text-center font-bold text-white tracking-widest" placeholder="000000" maxlength="6">
+            </div>
+            
+            <button onclick="verifySignUpOTP()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Verify & Activate Account</button>
+            <p class="text-xs text-gray-500">Didn't receive code? <span onclick="alert('OTP Resent!')" class="text-amber-500 cursor-pointer underline">Resend OTP</span></p>
+        </div>
+    </div>
+
     <!-- ================= MAIN DASHBOARD SECTION ================= -->
     <div id="dashboard-screen" class="hidden space-y-4">
         <!-- Header -->
         <div class="flex justify-between items-center bg-zinc-900 p-3 rounded-lg border border-zinc-800">
             <div>
                 <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
-                <p class="text-xs text-gray-500">ID: AT-9493</p>
+                <p class="text-xs text-gray-500" id="user-display-id">ID: AT-9493</p>
             </div>
             <button onclick="logout()" class="text-xs text-red-500 border border-red-500/30 px-2 py-1 rounded">Logout</button>
         </div>
@@ -102,7 +133,6 @@
             <div class="bg-zinc-900 p-3 rounded border border-zinc-800 space-y-1">
                 <p class="text-[10px] text-gray-500 font-bold">ADMIN WALLET ADDRESS</p>
                 <div class="flex justify-between items-center bg-black p-2 rounded border border-zinc-700">
-                    <!-- आपका लाइव वॉलेट एड्रेस यहाँ जोड़ दिया गया है -->
                     <span id="wallet-address" class="text-xs font-mono text-amber-400 break-all select-all">0xc94BaDA557310679b1e00F5125Ef65dAe05bebd5</span>
                     <button onclick="copyWallet()" class="text-xs text-gray-400 hover:text-white ml-2"><i class="fa-regular fa-copy"></i></button>
                 </div>
@@ -140,28 +170,93 @@
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
         let authMode = 'login';
+        let tempUser = {};
+
+        // नकली डेटाबेस: मान लेते हैं कि ये यूज़रनेम हमारे सिस्टम में पहले से मौजूद हैं
+        const existingUsernames = ['admin', 'rajesh9493', 'goldtrader', 'aurum_ai'];
 
         function switchAuthTab(mode) {
             authMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
             document.getElementById('tab-signup').className = mode === 'signup' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
-            document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+            
+            // शो या हाइड करना न्यू फील्ड्स को
+            document.getElementById('firstname-field').style.display = mode === 'signup' ? 'block' : 'none';
+            document.getElementById('lastname-field').style.display = mode === 'signup' ? 'block' : 'none';
+            document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
+            document.getElementById('confirm-password-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Create Account';
+            
+            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Verify Gmail';
         }
 
         function handleAuth(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
-            // टेंपरेरी लॉगिन सिमुलेशन
+            const password = document.getElementById('auth-password').value;
+            
+            if (authMode === 'signup') {
+                const firstName = document.getElementById('auth-firstname').value.trim();
+                const lastName = document.getElementById('auth-lastname').value.trim();
+                const username = document.getElementById('auth-username').value.trim().toLowerCase();
+                const confirmPassword = document.getElementById('auth-confirm-password').value;
+                
+                if(!firstName || !lastName || !username) {
+                    alert("Error: Please fill all the name fields!");
+                    return;
+                }
+
+                // 1. यूनिक यूज़रनेम चेक करना
+                if (existingUsernames.includes(username)) {
+                    alert("Error: Username '" + username + "' is already taken! Please choose a different unique username.");
+                    return;
+                }
+                
+                // 2. पासवर्ड मैच चेक करना
+                if (password !== confirmPassword) {
+                    alert("Error: Password and Confirm Password do not match!");
+                    return;
+                }
+                
+                // डेटा को टेम्पररी स्टोर करना
+                tempUser = { firstName, lastName, username, email };
+                
+                // ओटीपी स्क्रीन दिखाना
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('signup-otp-screen').classList.remove('hidden');
+                alert('Success: Code simulated. Enter any 6 digits to verify!');
+            } else {
+                // लॉगिन सिमुलेशन
+                showDashboard("TRADER", "User", email.split('@')[0]);
+            }
+        }
+
+        function verifySignUpOTP() {
+            const otpInput = document.getElementById('signup-otp-input').value;
+            if(otpInput.length === 6) {
+                alert('Account verified successfully!');
+                document.getElementById('signup-otp-screen').classList.add('hidden');
+                
+                // नया यूज़र डेटा डैशबोर्ड पर पास करना
+                showDashboard(tempUser.firstName, tempUser.lastName, tempUser.username);
+            } else {
+                alert('Please enter a valid 6-digit OTP');
+            }
+        }
+
+        function showDashboard(fName, lName, uName) {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            document.getElementById('user-display-name').innerText = email.split('@')[0].toUpperCase();
+            
+            // नाम और यूज़रनेम डैशबोर्ड पर सेट करना
+            document.getElementById('user-display-name').innerText = fName + " " + lName;
+            document.getElementById('user-display-id').innerText = "@" + uName;
         }
 
         function logout() {
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('auth-screen').classList.remove('hidden');
+            switchAuthTab('login');
         }
 
         function copyWallet() {
@@ -173,10 +268,7 @@
         function openWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('hidden'); }
         function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.add('hidden'); }
 
-        function sendOTP() {
-            alert('OTP sent to your registered Gmail successfully!');
-        }
-
+        function sendOTP() { alert('OTP sent to your registered Gmail successfully!'); }
         function confirmWithdraw() {
             const otp = document.getElementById('withdraw-otp').value;
             if(otp.length === 6) {
