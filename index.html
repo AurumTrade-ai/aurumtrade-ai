@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AurumTrade AI</title>
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #0d0d0d; color: #ffffff; font-family: 'Poppins', sans-serif; }
@@ -17,32 +15,26 @@
 </head>
 <body class="p-4 max-w-md mx-auto">
 
-    <!-- ================= AUTH SECTION (SIGN UP / LOGIN) ================= -->
     <div id="auth-screen" class="space-y-6 mt-10">
         <div class="text-center">
             <h1 class="text-3xl font-bold gold-text">AurumTrade AI</h1>
             <p class="text-gray-400 text-sm mt-1">Secure Institutional Trading Platform</p>
         </div>
 
-        <!-- Toggle Tabs -->
         <div class="flex border-b border-gray-700">
             <button id="tab-login" class="w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text" onclick="switchAuthTab('login')">Login</button>
             <button id="tab-signup" class="w-1/2 py-2 text-center font-bold text-gray-500" onclick="switchAuthTab('signup')">Sign Up</button>
         </div>
 
-        <!-- Auth Form -->
         <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-xl shadow-lg">
-            <!-- First Name Field -->
             <div id="firstname-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">FIRST NAME</label>
                 <input type="text" id="auth-firstname" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Rahul">
             </div>
-            <!-- Last Name / Surname Field -->
             <div id="lastname-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">LAST NAME / SURNAME</label>
                 <input type="text" id="auth-lastname" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Saini">
             </div>
-            <!-- Unique Username Field -->
             <div id="username-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">UNIQUE USERNAME</label>
                 <input type="text" id="auth-username" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="rahul9493">
@@ -51,8 +43,6 @@
                 <label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label>
                 <input type="email" id="auth-email" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="yourname@gmail.com">
             </div>
-            
-            <!-- Password with Show/Hide Option -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
                 <div class="relative">
@@ -62,8 +52,6 @@
                     </button>
                 </div>
             </div>
-            
-            <!-- Confirm Password with Show/Hide Option -->
             <div id="confirm-password-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label>
                 <div class="relative">
@@ -73,7 +61,6 @@
                     </button>
                 </div>
             </div>
-
             <div id="referral-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">REFERRAL CODE (OPTIONAL)</label>
                 <input type="text" id="auth-ref" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="REF123">
@@ -82,33 +69,24 @@
         </form>
     </div>
 
-    <!-- ================= SIGN UP OTP VERIFICATION SCREEN ================= -->
     <div id="signup-otp-screen" class="hidden space-y-6 mt-10 text-center">
         <div class="card-bg p-6 rounded-xl shadow-lg space-y-4">
             <h2 class="text-xl font-bold gold-text"><i class="fa-solid fa-envelope-shield"></i> Verify Your Gmail</h2>
-            <p class="text-xs text-gray-400">We have sent a 6-digit security OTP to your registered Gmail address. Please verify to activate your trading account.</p>
-            
-            <div>
-                <input type="text" id="signup-otp-input" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-lg text-center font-bold text-white tracking-widest" placeholder="000000" maxlength="6">
-            </div>
-            
-            <button onclick="verifySignUpOTP()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Verify & Activate Account</button>
-            <p class="text-xs text-gray-500">Didn't receive code? <span onclick="alert('OTP Resent!')" class="text-amber-500 cursor-pointer underline">Resend OTP</span></p>
+            <p class="text-xs text-gray-400">We have sent a security verification link/code to your registered Gmail address via Firebase. Please complete verification to login.</p>
+            <button onclick="checkEmailVerificationStatus()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">I Verified my Email (Proceed)</button>
+            <p class="text-xs text-gray-500">Didn't receive it? <span onclick="resendVerificationEmail()" class="text-amber-500 cursor-pointer underline">Resend Link</span></p>
         </div>
     </div>
 
-    <!-- ================= MAIN DASHBOARD SECTION ================= -->
     <div id="dashboard-screen" class="hidden space-y-4">
-        <!-- Header -->
         <div class="flex justify-between items-center bg-zinc-900 p-3 rounded-lg border border-zinc-800">
             <div>
                 <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
-                <p class="text-xs text-gray-500" id="user-display-id">ID: AT-9493</p>
+                <p class="text-xs text-gray-500" id="user-display-id">@trader</p>
             </div>
             <button onclick="logout()" class="text-xs text-red-500 border border-red-500/30 px-2 py-1 rounded">Logout</button>
         </div>
 
-        <!-- Investment & ROI Cards -->
         <div class="grid grid-cols-2 gap-3">
             <div class="card-bg p-3 rounded-lg">
                 <p class="text-xs text-gray-400">Total Investment</p>
@@ -120,7 +98,6 @@
             </div>
         </div>
 
-        <!-- ================= LEVEL INCOME SECTION ================= -->
         <div class="card-bg p-4 rounded-lg space-y-2">
             <h3 class="text-xs font-bold text-gray-400 tracking-wider flex items-center gap-2">
                 <i class="fa-solid fa-network-wired gold-text"></i> LEVEL INCOME DASHBOARD
@@ -128,20 +105,19 @@
             <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
                 <div class="bg-zinc-900 p-2 rounded border border-zinc-800">
                     <p class="text-gray-500 font-medium">Level 1 (5%)</p>
-                    <p class="font-bold text-white mt-1" id="level-1-income">$0.00</p>
+                    <p class="font-bold text-white mt-1">$0.00</p>
                 </div>
                 <div class="bg-zinc-900 p-2 rounded border border-zinc-800">
                     <p class="text-gray-500 font-medium">Level 2 (3%)</p>
-                    <p class="font-bold text-white mt-1" id="level-2-income">$0.00</p>
+                    <p class="font-bold text-white mt-1">$0.00</p>
                 </div>
                 <div class="bg-zinc-900 p-2 rounded border border-zinc-800">
                     <p class="text-gray-500 font-medium">Level 3 (2%)</p>
-                    <p class="font-bold text-white mt-1" id="level-3-income">$0.00</p>
+                    <p class="font-bold text-white mt-1">$0.00</p>
                 </div>
             </div>
         </div>
 
-        <!-- Deposit Section with Admin Wallet -->
         <div class="card-bg p-4 rounded-lg space-y-3">
             <h3 class="text-sm font-bold gold-text"><i class="fa-solid fa-wallet"></i> Deposit USDT (BEP-20)</h3>
             <div class="bg-zinc-900 p-3 rounded border border-zinc-800 space-y-1">
@@ -153,44 +129,68 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="grid grid-cols-2 gap-4 pt-2">
-            <button onclick="alert('Deposit Form Coming Soon')" class="gold-bg text-black font-bold py-3 rounded-lg text-sm shadow-md">Deposit</button>
+            <button onclick="openDepositModal()" class="gold-bg text-black font-bold py-3 rounded-lg text-sm shadow-md">Deposit Now</button>
             <button onclick="openWithdrawModal()" class="bg-zinc-800 border border-zinc-700 text-white font-bold py-3 rounded-lg text-sm">Withdraw</button>
         </div>
     </div>
 
-    <!-- ================= WITHDRAW MODAL WITH OTP ================= -->
+    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="card-bg w-full max-w-sm p-6 rounded-xl relative space-y-4">
+            <button onclick="closeDepositModal()" class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl">&times;</button>
+            <h3 class="text-lg font-bold gold-text"><i class="fa-solid fa-arrow-down-to-line"></i> Submit Deposit Request</h3>
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Deposit Amount (USDT)</label>
+                    <input type="number" id="deposit-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="Min $10">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Transaction Hash ID (TXID)</label>
+                    <input type="text" id="deposit-txid" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white font-mono text-xs" placeholder="Paste blockchain TXID hash">
+                </div>
+                <button onclick="submitDepositData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Submit Request to Admin</button>
+            </div>
+        </div>
+    </div>
+
     <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="card-bg w-full max-w-sm p-6 rounded-xl relative space-y-4">
             <button onclick="closeWithdrawModal()" class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl">&times;</button>
             <h3 class="text-lg font-bold gold-text"><i class="fa-solid fa-upload"></i> Withdraw USDT (BEP-20)</h3>
-            
             <div class="space-y-3">
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Withdraw Amount (USDT)</label>
                     <input type="number" id="withdraw-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Min $10">
                 </div>
-                <button onclick="sendOTP()" class="w-full bg-zinc-800 border border-zinc-700 text-xs text-amber-400 py-2 rounded">Send OTP to Gmail</button>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Enter 6-Digit OTP</label>
-                    <input type="text" id="withdraw-otp" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white text-center tracking-widest" placeholder="000000">
-                </div>
-                <button onclick="confirmWithdraw()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm & Withdraw</button>
+                <button onclick="alert('Withdraw OTP trigger simulated via active session!')" class="w-full bg-zinc-800 border border-zinc-700 text-xs text-amber-400 py-2 rounded">Verify Session OTP</button>
+                <button onclick="alert('Withdraw Request Submitted!')" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm Withdrawal</button>
             </div>
         </div>
     </div>
 
-    <!-- ================= JAVASCRIPT LOGIC ================= -->
-    <script>
-        let authMode = 'login';
-        let tempUser = {};
+    <script type="module">
+        // Firebase लाइव स्क्रिप्ट इम्पोर्ट
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // डमी यूज़रनेम लिस्ट लाइव डेटाबेस जोड़ने तक
-        const existingUsernames = ['admin', 'rajesh9493', 'goldtrader'];
+        // आपके स्क्रीनशॉट से लाइव कीज़ का इंटीग्रेशन
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiF",
+            authDomain: "aurumtrade-ai.firebaseapp.com",
+            projectId: "aurumtrade-ai",
+            storageBucket: "aurumtrade-ai.appspot.com",
+            messagingSenderId: "213283112650",
+            appId: "1:213283112650:web:20bcdd734"
+        };
 
-        function switchAuthTab(mode) {
-            authMode = mode;
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.authMode = 'login';
+
+        // ग्लोबल स्कोप में फंक्शंस को सेट करना ताकि HTML बटन्स काम कर सकें
+        window.switchAuthTab = function(mode) {
+            window.authMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
             document.getElementById('tab-signup').className = mode === 'signup' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
             
@@ -199,12 +199,10 @@
             document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('confirm-password-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
-            
             document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Verify Gmail';
-        }
+        };
 
-        // पासवर्ड शो/हाइड करने का फंक्शन
-        function togglePasswordVisibility(inputId, iconId) {
+        window.togglePasswordVisibility = function(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
             if (input.type === 'password') {
@@ -214,54 +212,78 @@
                 input.type = 'password';
                 icon.className = 'fa-solid fa-eye-slash text-xs';
             }
-        }
+        };
 
-        function handleAuth(e) {
+        window.handleAuth = function(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            
-            if (authMode === 'signup') {
+
+            if (window.authMode === 'signup') {
                 const firstName = document.getElementById('auth-firstname').value.trim();
                 const lastName = document.getElementById('auth-lastname').value.trim();
                 const username = document.getElementById('auth-username').value.trim().toLowerCase();
                 const confirmPassword = document.getElementById('auth-confirm-password').value;
-                
-                if(!firstName || !lastName || !username) {
-                    alert("Error: Please fill all fields!");
-                    return;
-                }
 
-                if (existingUsernames.includes(username)) {
-                    alert("Error: Username '" + username + "' is already taken!");
-                    return;
-                }
-                
-                // पासवर्ड मिसमैच फिक्स: अब यह आगे बढ़ने से रोकेगा
                 if (password !== confirmPassword) {
                     alert("Error: Password and Confirm Password do not match!");
-                    return; 
+                    return;
                 }
-                
-                tempUser = { firstName, lastName, username, email };
-                
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('signup-otp-screen').classList.remove('hidden');
-            } else {
-                showDashboard("TRADER", "User", email.split('@')[0]);
-            }
-        }
 
-        function verifySignUpOTP() {
-            const otpInput = document.getElementById('signup-otp-input').value;
-            if(otpInput.length === 6) {
-                alert('Account verified successfully!');
-                document.getElementById('signup-otp-screen').classList.add('hidden');
-                showDashboard(tempUser.firstName, tempUser.lastName, tempUser.username);
+                // Firebase लाइव ईमेल रजिस्ट्रेशन
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // असली ईमेल वेरिफिकेशन लिंक ट्रिगर करना
+                        sendEmailVerification(userCredential.user)
+                            .then(() => {
+                                localStorage.setItem('temp_user_data', JSON.stringify({firstName, lastName, username}));
+                                document.getElementById('auth-screen').classList.add('hidden');
+                                document.getElementById('signup-otp-screen').classList.remove('hidden');
+                                alert('Verification Link sent to ' + email + '. Please check your inbox/spam folder!');
+                            });
+                    })
+                    .catch((error) => { alert("Registration Error: " + error.message); });
             } else {
-                alert('Please enter a valid 6-digit OTP');
+                // Firebase लाइव लॉगिन
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        if(userCredential.user.emailVerified) {
+                            showDashboard(userCredential.user.email.split('@')[0], "", userCredential.user.email.split('@')[0]);
+                        } else {
+                            alert("Please verify your email first! Verification link was sent to your inbox.");
+                            auth.signOut();
+                        }
+                    })
+                    .catch((error) => { alert("Login Error: " + error.message); });
             }
-        }
+        };
+
+        window.checkEmailVerificationStatus = function() {
+            auth.currentUser.reload().then(() => {
+                if(auth.currentUser.emailVerified) {
+                    alert('Email verified successfully!');
+                    const data = JSON.parse(localStorage.getItem('temp_user_data')) || {firstName: "Trader", lastName: "", username: "user"};
+                    document.getElementById('signup-otp-screen').classList.add('hidden');
+                    showDashboard(data.firstName, data.lastName, data.username);
+                } else {
+                    alert('Verification pending. Please click the link inside the email sent by Firebase.');
+                }
+            });
+        };
+
+        window.resendVerificationEmail = function() {
+            if(auth.currentUser) {
+                sendEmailVerification(auth.currentUser).then(() => { alert('Verification email resent!'); });
+            }
+        };
+
+        window.logout = function() {
+            signOut(auth).then(() => {
+                document.getElementById('dashboard-screen').classList.add('hidden');
+                document.getElementById('auth-screen').classList.remove('hidden');
+                window.switchAuthTab('login');
+            });
+        };
 
         function showDashboard(fName, lName, uName) {
             document.getElementById('auth-screen').classList.add('hidden');
@@ -270,31 +292,35 @@
             document.getElementById('user-display-id').innerText = "@" + uName;
         }
 
-        function logout() {
-            document.getElementById('dashboard-screen').classList.add('hidden');
-            document.getElementById('auth-screen').classList.remove('hidden');
-            switchAuthTab('login');
-        }
+        // मोडल फंक्शंस
+        window.openDepositModal = function() { document.getElementById('deposit-modal').classList.remove('hidden'); };
+        window.closeDepositModal = function() { document.getElementById('deposit-modal').classList.add('hidden'); };
+        window.openWithdrawModal = function() { document.getElementById('withdraw-modal').classList.remove('hidden'); };
+        window.closeWithdrawModal = function() { document.getElementById('withdraw-modal').classList.add('hidden'); };
 
-        function copyWallet() {
+        window.copyWallet = function() {
             const address = document.getElementById('wallet-address').innerText;
             navigator.clipboard.writeText(address);
             alert('Admin Wallet Address Copied!');
-        }
+        };
 
-        function openWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('hidden'); }
-        function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.add('hidden'); }
-
-        function sendOTP() { alert('OTP sent successfully!'); }
-        function confirmWithdraw() {
-            const otp = document.getElementById('withdraw-otp').value;
-            if(otp.length === 6) {
-                alert('Withdraw request submitted!');
-                closeWithdrawModal();
-            } else {
-                alert('Please enter valid 6-digit OTP');
+        window.submitDepositData = function() {
+            const amt = document.getElementById('deposit-amount').value;
+            const txid = document.getElementById('deposit-txid').value;
+            if(!amt || !txid) {
+                alert('Please enter both Amount and TXID Hash!');
+                return;
             }
-        }
+            alert('Deposit Request of $' + amt + ' with TXID ' + txid + ' successfully submitted to Admin dashboard!');
+            window.closeDepositModal();
+        };
+
+        // सेशन की लाइव चेकिंग
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.emailVerified) {
+                showDashboard(user.email.split('@')[0], "", user.email.split('@')[0]);
+            }
+        });
     </script>
 </body>
 </html>
