@@ -3,167 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AurumTrade AI - Full Institutional Platform</title>
+    <title>AurumTrade AI - Trading Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; }
-        .gold-text { color: #f39c12; }
+        body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        .gold-text { color: #f39c12; text-shadow: 0 0 10px rgba(243, 156, 18, 0.2); }
         .gold-bg { background-color: #f39c12; }
-        .card-bg { background-color: rgba(26, 26, 26, 0.85); border: 1px solid rgba(243, 156, 18, 0.2); backdrop-filter: blur(15px); }
+        .card-bg { background-color: rgba(26, 26, 26, 0.75); border: 1px solid rgba(243, 156, 18, 0.15); backdrop-filter: blur(12px); }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
     </style>
 </head>
-<body class="p-4 max-w-md mx-auto min-h-screen">
+<body class="p-4 max-w-md mx-auto relative min-h-screen">
 
-    <!-- AUTH SCREEN -->
-    <div id="auth-screen" class="space-y-6 mt-10">
-        <div class="text-center"><h1 class="text-3xl font-bold gold-text"><i class="fa-solid fa-chart-line"></i> AurumTrade AI</h1></div>
-        <div class="flex border-b border-zinc-800">
-            <button id="tab-login" class="w-1/2 py-3 font-bold border-b-2 border-amber-500" onclick="switchTab('login')">Login</button>
-            <button id="tab-signup" class="w-1/2 py-3 font-bold text-gray-500" onclick="switchTab('signup')">Sign Up</button>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- ================= AUTH SCREEN ================= -->
+    <div id="auth-screen" class="space-y-6 mt-10 relative z-10">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold gold-text flex items-center justify-center gap-2"><i class="fa-solid fa-chart-line text-2xl animate-pulse"></i> AurumTrade AI</h1>
+            <p class="text-gray-400 text-sm mt-1 tracking-wider">Secure Institutional Trading Platform</p>
         </div>
-        <form id="auth-form" onsubmit="handleAuth(event)" class="card-bg p-6 rounded-b-xl shadow-2xl space-y-4">
-            <div><label class="block text-xs text-gray-400">USER ID</label><input type="text" id="auth-username" required class="w-full bg-black/50 p-2 rounded text-white border border-zinc-700"></div>
-            <div id="email-field" class="hidden"><label class="block text-xs text-gray-400">GMAIL ADDRESS</label><input type="email" id="auth-email" class="w-full bg-black/50 p-2 rounded text-white border border-zinc-700"></div>
-            <div><label class="block text-xs text-gray-400">PASSWORD</label><input type="password" id="auth-password" required class="w-full bg-black/50 p-2 rounded text-white border border-zinc-700"></div>
-            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2.5 rounded">Login</button>
+        <div class="flex border-b border-zinc-800 rounded-t-xl overflow-hidden">
+            <button id="tab-login" class="w-1/2 py-3 text-center font-bold border-b-2 border-amber-500 gold-text bg-zinc-900/30" onclick="switchAuthTab('login')">Username Login</button>
+            <button id="tab-signup" class="w-1/2 py-3 text-center font-bold text-gray-500 bg-zinc-900/10" onclick="switchAuthTab('signup')">Sign Up</button>
+        </div>
+        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-b-xl shadow-2xl">
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 mb-1">USERNAME</label>
+                <input type="text" id="auth-username" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white font-mono" placeholder="e.g. rahul123">
+            </div>
+            <div id="email-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label>
+                <input type="email" id="auth-email" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="name@gmail.com">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
+                <input type="password" id="auth-password" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="******">
+            </div>
+            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm mt-2">Login Account</button>
         </form>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard-screen" class="hidden space-y-4 mt-6">
+    <!-- ================= USER DASHBOARD ================= -->
+    <div id="dashboard-screen" class="hidden space-y-4 relative z-10 mt-4">
         <div class="card-bg p-4 rounded-lg flex justify-between items-center">
-            <div><h2 class="text-sm font-bold gold-text" id="user-display-name">@username</h2></div>
+            <div>
+                <h2 class="text-sm font-bold gold-text">Welcome Trader</h2>
+                <p class="text-xs text-zinc-400 font-mono" id="user-display-name">@username</p>
+            </div>
+            <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded bg-red-500/5">Logout</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Total Investment</p><p id="dashboard-investment" class="text-lg font-bold text-white">$0.00</p></div>
+            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI (0.4%)</p><p id="dashboard-roi" class="text-lg font-bold gold-text">$0.00</p></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="openDepositModal()" class="gold-bg text-black font-bold py-3 rounded-lg text-sm">Deposit Now</button>
+            <button onclick="openWithdrawModal()" class="bg-zinc-800 text-white font-bold py-3 rounded-lg text-sm">Withdraw</button>
+        </div>
+        
+        <div class="mt-4 p-4 border border-red-900/30 bg-red-950/10 rounded-lg">
+            <p class="text-[10px] text-red-500 uppercase font-bold text-center mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Market Risk Disclaimer</p>
+            <p class="text-[10px] text-zinc-400 text-center leading-tight">Trading in digital assets involves high risk. Please invest only what you can afford to lose. Past performance is not a guarantee of future results.</p>
+        </div>
+    </div>
+
+    <!-- ================= ADMIN DASHBOARD PANEL ================= -->
+    <div id="admin-screen" class="hidden space-y-4 relative z-10 mt-4">
+        <div class="card-bg p-4 rounded-lg flex justify-between items-center border-red-500/30">
+            <div>
+                <h2 class="text-sm font-bold text-red-500"><i class="fa-solid fa-user-shield"></i> Admin Control Center</h2>
+                <p class="text-[11px] text-zinc-400">Manage Manual Deposits</p>
+            </div>
             <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded">Logout</button>
         </div>
         
-        <div class="grid grid-cols-2 gap-3">
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Investment</p><p id="dashboard-investment" class="text-lg font-bold text-white">$0.00</p></div>
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI</p><p id="dashboard-roi" class="text-lg font-bold gold-text">$0.00</p></div>
-        </div>
-
-        <div class="card-bg p-4 rounded-lg space-y-2">
-            <h3 class="text-[10px] font-bold text-gray-400 uppercase">USDT (BEP20) Wallet Address</h3>
-            <input type="text" id="wallet-input" class="w-full bg-black p-2 rounded text-xs text-white border border-zinc-700" placeholder="0x...">
-            <button onclick="saveWallet()" class="w-full bg-zinc-800 text-amber-500 text-xs py-2 rounded border border-amber-500/30">Verify/Update Wallet</button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="openModal('deposit-modal')" class="gold-bg text-black font-bold py-3 rounded text-sm">Deposit</button>
-            <button onclick="openModal('withdraw-modal')" class="bg-zinc-800 text-white font-bold py-3 rounded text-sm">Withdraw</button>
+        <div class="card-bg p-4 rounded-lg space-y-3">
+            <h3 class="text-xs font-bold gold-text uppercase tracking-wider">Pending Deposit Requests</h3>
+            <div id="admin-requests-list" class="space-y-3 max-h-96 overflow-y-auto text-xs">
+                <p class="text-zinc-500 text-center py-4">No pending deposit requests found.</p>
+            </div>
         </div>
     </div>
 
-    <!-- ADMIN PANEL -->
-    <div id="admin-screen" class="hidden space-y-4 mt-6">
-        <h2 class="text-red-500 font-bold text-center border-b border-red-500/20 pb-2">ADMIN CONTROL PANEL</h2>
-        <div id="admin-requests-list" class="space-y-3"></div>
-    </div>
-
-    <!-- MODALS (DEPOSIT/WITHDRAW) -->
-    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/90 p-6 flex items-center justify-center">
-        <div class="card-bg w-full p-6 rounded-xl space-y-4">
-            <h3 class="gold-text font-bold">Deposit USDT (BEP20)</h3>
-            <input type="number" id="deposit-amount" class="w-full bg-black p-2 rounded text-sm" placeholder="Amount ($)">
-            <input type="text" id="deposit-txid" class="w-full bg-black p-2 rounded text-sm" placeholder="TXID Hash">
-            <button onclick="submitDeposit()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Submit Request</button>
-            <button onclick="closeModal('deposit-modal')" class="w-full text-zinc-500 text-xs">Close</button>
+    <!-- ================= DEPOSIT MODAL ================= -->
+    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="card-bg w-full max-w-sm p-6 rounded-xl space-y-4">
+            <h3 class="text-lg font-bold gold-text">Deposit (USDT)</h3>
+            <p class="text-[10px] text-zinc-400">Investment Limit: $100 - $10,000</p>
+            <input type="number" id="deposit-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="Amount ($100 - $10,000)">
+            <input type="text" id="deposit-txid" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white font-mono text-xs" placeholder="Paste Blockchain TXID Hash">
+            <button onclick="submitDepositData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Submit Request to Admin</button>
+            <button onclick="closeDepositModal()" class="w-full text-zinc-500 text-xs">Cancel</button>
         </div>
     </div>
 
+    <!-- ================= WITHDRAW MODAL ================= -->
+    <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="card-bg w-full max-w-sm p-6 rounded-xl space-y-4">
+            <h3 class="text-lg font-bold gold-text">Withdraw (USDT)</h3>
+            <p class="text-[10px] text-zinc-400">Min Withdraw: $10 | 5% Fee Applies</p>
+            <input type="number" id="withdraw-amount" oninput="calculateWithdrawFee()" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="Enter Amount">
+            <div class="bg-zinc-950 p-3 rounded text-xs text-zinc-400">
+                <p>Fee (5%): <span id="fee-display" class="text-white">$0.00</span></p>
+                <p class="text-amber-500 font-bold">You will receive: <span id="final-receive-display">$0.00</span></p>
+            </div>
+            <button onclick="submitWithdrawData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm Withdraw</button>
+            <button onclick="closeWithdrawModal()" class="w-full text-zinc-500 text-xs">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ================= SCRIPTS & FIREBASE ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", authDomain: "aurumtrade-ai.firebaseapp.com", projectId: "aurumtrade-ai", databaseURL: "https://aurumtrade-ai-default-rtdb.firebaseio.com" };
-        const db = getDatabase(initializeApp(firebaseConfig));
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", 
+            authDomain: "aurumtrade-ai.firebaseapp.com", 
+            projectId: "aurumtrade-ai", 
+            storageBucket: "aurumtrade-ai.firebasestorage.app", 
+            messagingSenderId: "213283112650", 
+            appId: "1:213283112650:web:20bcdd734fffe85d17d633" 
+        };
 
-        let currentMode = 'login';
-        window.switchTab = (mode) => {
-            currentMode = mode;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // एडमिन का स्पेशल यूजरनेम लॉक कर दिया है
+        const ADMIN_USERNAME = "krishnaadmin"; 
+        let currentSessionUser = null;
+
+        window.authMode = 'login';
+
+        window.switchAuthTab = (mode) => {
+            window.authMode = mode;
             document.getElementById('email-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login' : 'Register';
+            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register Account';
         };
 
         window.handleAuth = (e) => {
             e.preventDefault();
-            const u = document.getElementById('auth-username').value.toLowerCase();
-            const p = document.getElementById('auth-password').value;
-            const refUser = ref(db, `users/${u}`);
-            
-            if(currentMode === 'signup') {
-                set(refUser, { password: p, email: document.getElementById('auth-email').value, totalInvestment: 0, wallet: "" })
-                .then(() => alert("Registration Successful! Now you can Login."));
-            } else {
-                get(refUser).then(s => {
-                    if(s.exists() && s.val().password === p) {
-                        if(u === 'krishnaadmin') { showAdminPanel(); }
-                        else { showDashboard(u, s.val()); }
-                    } else { alert("Invalid ID or Password"); }
+            const username = document.getElementById('auth-username').value.trim().toLowerCase();
+            const pass = document.getElementById('auth-password').value;
+
+            // 1. एडमिन चेक
+            if (window.authMode === 'login' && username === ADMIN_USERNAME) {
+                // पहली बार या हमेशा एडमिन लॉगिन के लिए आप जो भी पासवर्ड सेट करना चाहें यहाँ वेरीफाई होगा
+                if (pass === "Admin@123") { 
+                    currentSessionUser = { username: ADMIN_USERNAME };
+                    showAdminPanel();
+                    return;
+                } else {
+                    alert("Incorrect Admin Password!");
+                    return;
+                }
+            }
+
+            const userRef = ref(db, `users/${username}`);
+
+            if(window.authMode === 'signup') {
+                const email = document.getElementById('auth-email').value.trim();
+                if(!email) return alert("Email is required for registration!");
+                
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        alert("Username already taken! Try another one.");
+                    } else {
+                        set(userRef, {
+                            username: username,
+                            email: email,
+                            password: pass,
+                            totalInvestment: 0
+                        }).then(() => {
+                            alert("🚀 Registration Successful! You can now Login.");
+                            window.switchAuthTab('login');
+                        });
+                    }
                 });
+            } else {
+                // यूजरनेम लॉगिन प्रोसेस
+                get(userRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        if (userData.password === pass) {
+                            currentSessionUser = userData;
+                            showUserDashboard(userData);
+                        } else {
+                            alert("Incorrect Password!");
+                        }
+                    } else {
+                        alert("Username not found!");
+                    }
+                }).catch(err => alert(err.message));
             }
         };
 
-        function showDashboard(u, data) {
+        window.submitDepositData = () => {
+            const amt = parseFloat(document.getElementById('deposit-amount').value);
+            const txid = document.getElementById('deposit-txid').value.trim();
+            
+            if (amt < 100 || amt > 10000 || isNaN(amt)) return alert('Error: Investment must be $100 - $10,000');
+            if(!txid) return alert('Please enter TXID!');
+
+            const newDepositRef = push(ref(db, 'deposits'));
+            set(newDepositRef, {
+                username: currentSessionUser.username,
+                amount: amt,
+                txid: txid,
+                status: 'pending'
+            }).then(() => {
+                alert('🚀 Deposit request sent to Admin! Wait for approval.');
+                closeDepositModal();
+            });
+        };
+
+        function showUserDashboard(user) {
             document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('admin-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            document.getElementById('user-display-name').innerText = "@" + u;
-            document.getElementById('dashboard-investment').innerText = "$" + (data.totalInvestment || 0);
-            document.getElementById('dashboard-roi').innerText = "$" + ((data.totalInvestment || 0) * 0.004).toFixed(2);
-            document.getElementById('wallet-input').value = data.wallet || "";
+            document.getElementById('user-display-name').innerText = "@" + user.username;
+
+            onValue(ref(db, `users/${user.username}`), (snapshot) => {
+                const data = snapshot.val();
+                const investment = data ? data.totalInvestment || 0 : 0;
+                document.getElementById('dashboard-investment').innerText = '$' + investment.toFixed(2);
+                document.getElementById('dashboard-roi').innerText = '$' + (investment * 0.004).toFixed(2);
+            });
         }
-
-        window.saveWallet = () => {
-            const addr = document.getElementById('wallet-input').value.trim();
-            if(!addr.startsWith('0x') || addr.length !== 42) return alert("Invalid BEP20 Address!");
-            const u = document.getElementById('user-display-name').innerText.replace('@', '');
-            update(ref(db, `users/${u}`), { wallet: addr }).then(() => alert("Wallet Verified & Saved!"));
-        };
-
-        window.submitDeposit = () => {
-            const u = document.getElementById('user-display-name').innerText.replace('@', '');
-            push(ref(db, 'deposits'), { 
-                username: u, 
-                amount: document.getElementById('deposit-amount').value, 
-                txid: document.getElementById('deposit-txid').value, 
-                status: 'pending' 
-            }).then(() => { alert("Deposit submitted for approval!"); closeModal('deposit-modal'); });
-        };
 
         function showAdminPanel() {
             document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('admin-screen').classList.remove('hidden');
+
             onValue(ref(db, 'deposits'), (snapshot) => {
-                const list = document.getElementById('admin-requests-list');
-                list.innerHTML = '';
+                const listContainer = document.getElementById('admin-requests-list');
+                listContainer.innerHTML = '';
                 const data = snapshot.val();
-                if(data) {
-                    Object.keys(data).forEach(key => {
-                        const req = data[key];
-                        if(req.status === 'pending') {
-                            const div = document.createElement('div');
-                            div.className = "card-bg p-3 rounded text-xs";
-                            div.innerHTML = `<p>User: ${req.username}</p><p>Amt: $${req.amount}</p>
-                                            <button onclick="approve('${key}', '${req.username}', ${req.amount})" class="bg-green-600 px-2 py-1 mt-2">Approve</button>`;
-                            list.appendChild(div);
-                        }
-                    });
+                
+                if(!data) {
+                    listContainer.innerHTML = '<p class="text-zinc-500 text-center py-4">No pending deposit requests.</p>';
+                    return;
                 }
+
+                Object.keys(data).forEach(key => {
+                    const req = data[key];
+                    if(req.status === 'pending') {
+                        const div = document.createElement('div');
+                        div.className = "bg-black/50 p-3 rounded border border-zinc-800 space-y-2";
+                        div.innerHTML = `
+                            <p><span class="text-zinc-500">User:</span> <span class="text-white font-bold">@${req.username}</span></p>
+                            <p><span class="text-zinc-500">Amount:</span> <span class="text-green-400 font-bold">$${req.amount}</span></p>
+                            <p><span class="text-zinc-500">TXID:</span> <span class="text-amber-400 font-mono text-[10px] break-all">${req.txid}</span></p>
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="approveDeposit('${key}', '${req.username}', ${req.amount})" class="bg-green-600 text-black font-bold px-3 py-1 rounded text-[11px]">Approve</button>
+                                <button onclick="rejectDeposit('${key}')" class="bg-zinc-800 text-red-400 px-3 py-1 rounded text-[11px]">Reject</button>
+                            </div>
+                        `;
+                        listContainer.appendChild(div);
+                    }
+                });
             });
         }
 
-        window.approve = (key, u, amt) => {
-            get(ref(db, `users/${u}`)).then(s => {
-                const total = (s.val().totalInvestment || 0) + parseFloat(amt);
-                update(ref(db, `users/${u}`), { totalInvestment: total });
-                update(ref(db, `deposits/${key}`), { status: 'approved' });
-                alert("Approved!");
+        window.approveDeposit = (key, username, amount) => {
+            const userLogRef = ref(db, `users/${username}`);
+            get(userLogRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const currentData = snapshot.val();
+                    const currentInvestment = currentData.totalInvestment || 0;
+                    
+                    update(userLogRef, {
+                        totalInvestment: currentInvestment + amount
+                    }).then(() => {
+                        remove(ref(db, `deposits/${key}`)).then(() => {
+                            alert('Deposit Approved Successfully!');
+                        });
+                    });
+                }
             });
         };
 
-        window.logout = () => location.reload();
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        window.rejectDeposit = (key) => {
+            if(confirm('Are you sure you want to reject this request?')) {
+                remove(ref(db, `deposits/${key}`));
+            }
+        };
+
+        window.calculateWithdrawFee = () => {
+            const amt = parseFloat(document.getElementById('withdraw-amount').value) || 0;
+            const fee = amt * 0.05;
+            document.getElementById('fee-display').innerText = '$' + fee.toFixed(2);
+            document.getElementById('final-receive-display').innerText = '$' + (amt - fee > 0 ? (amt - fee).toFixed(2) : '0.00');
+        };
+
+        window.submitWithdrawData = () => {
+            const amt = parseFloat(document.getElementById('withdraw-amount').value);
+            if (amt < 10 || isNaN(amt)) return alert('Min withdrawal is $10');
+            alert('Withdrawal Request Submitted!');
+            closeWithdrawModal();
+        };
+
+        window.openDepositModal = () => document.getElementById('deposit-modal').classList.remove('hidden');
+        window.closeDepositModal = () => document.getElementById('deposit-modal').classList.add('hidden');
+        window.openWithdrawModal = () => document.getElementById('withdraw-modal').classList.remove('hidden');
+        window.closeWithdrawModal = () => document.getElementById('withdraw-modal').classList.add('hidden');
+        window.logout = () => { currentSessionUser = null; location.reload(); };
     </script>
 </body>
 </html>
