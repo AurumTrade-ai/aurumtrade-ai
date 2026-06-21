@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AurumTrade AI</title>
+    <title>AurumTrade AI - Trading Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,7 +18,7 @@
 
     <canvas id="bg-canvas"></canvas>
 
-    <!-- AUTH SCREEN -->
+    <!-- ================= AUTH SCREEN ================= -->
     <div id="auth-screen" class="space-y-6 mt-10 relative z-10">
         <div class="text-center">
             <h1 class="text-3xl font-bold gold-text flex items-center justify-center gap-2"><i class="fa-solid fa-chart-line text-2xl animate-pulse"></i> AurumTrade AI</h1>
@@ -29,59 +29,83 @@
             <button id="tab-signup" class="w-1/2 py-3 text-center font-bold text-gray-500 bg-zinc-900/10" onclick="switchAuthTab('signup')">Sign Up</button>
         </div>
         <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-b-xl shadow-2xl">
-            <div id="firstname-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">FIRST NAME</label><input type="text" id="auth-firstname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white"></div>
-            <div id="lastname-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">LAST NAME</label><input type="text" id="auth-lastname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white"></div>
-            <div id="username-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">USERNAME</label><input type="text" id="auth-username" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white"></div>
-            <div><label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label><input type="email" id="auth-email" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white"></div>
-            <div><label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label><input type="password" id="auth-password" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white"></div>
-            <div id="confirm-password-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label><input type="password" id="auth-confirm-password" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white"></div>
+            <div id="firstname-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">FIRST NAME</label><input type="text" id="auth-firstname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Rahul"></div>
+            <div id="lastname-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">LAST NAME</label><input type="text" id="auth-lastname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Saini"></div>
+            <div id="username-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">USERNAME</label><input type="text" id="auth-username" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="rahul123"></div>
+            <div><label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label><input type="email" id="auth-email" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="name@gmail.com"></div>
+            <div><label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label><input type="password" id="auth-password" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="******"></div>
+            <div id="confirm-password-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label><input type="password" id="auth-confirm-password" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="******"></div>
             <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm mt-2">Login Account</button>
         </form>
     </div>
 
-    <!-- OTP SCREEN -->
+    <!-- ================= OTP / VERIFICATION SCREEN ================= -->
     <div id="signup-otp-screen" class="hidden space-y-6 mt-10 text-center relative z-10">
         <div class="card-bg p-6 rounded-xl shadow-2xl space-y-4">
-            <h2 class="text-xl font-bold gold-text">Check Your Inbox</h2>
-            <p id="sent-email-display" class="text-sm font-bold text-amber-400"></p>
+            <h2 class="text-xl font-bold gold-text"><i class="fa-solid fa-envelope-shield"></i> Check Your Inbox</h2>
+            <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg my-2">
+                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">Verification link sent to:</p>
+                <p id="sent-email-display" class="text-sm font-bold text-amber-400 break-all mt-0.5"></p>
+            </div>
             <button onclick="checkEmailVerificationStatus()" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm">I Verified my Email</button>
         </div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- ================= USER DASHBOARD ================= -->
     <div id="dashboard-screen" class="hidden space-y-4 relative z-10 mt-4">
-        <div class="card-bg p-4 rounded-lg">
-            <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
-            <button onclick="logout()" class="text-xs text-red-400 mt-2">Logout</button>
+        <div class="card-bg p-4 rounded-lg flex justify-between items-center">
+            <div>
+                <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
+                <p class="text-xs text-zinc-500" id="user-uid"></p>
+            </div>
+            <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded bg-red-500/5">Logout</button>
         </div>
         <div class="grid grid-cols-2 gap-3">
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Total Investment</p><p class="text-lg font-bold text-white">$1,000.00</p></div>
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI (0.4%)</p><p class="text-lg font-bold gold-text">$4.00</p></div>
+            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Total Investment</p><p id="dashboard-investment" class="text-lg font-bold text-white">$0.00</p></div>
+            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI (0.4%)</p><p id="dashboard-roi" class="text-lg font-bold gold-text">$0.00</p></div>
         </div>
         <div class="grid grid-cols-2 gap-4">
             <button onclick="openDepositModal()" class="gold-bg text-black font-bold py-3 rounded-lg text-sm">Deposit Now</button>
             <button onclick="openWithdrawModal()" class="bg-zinc-800 text-white font-bold py-3 rounded-lg text-sm">Withdraw</button>
         </div>
-        <!-- Risk Disclaimer -->
+        
         <div class="mt-4 p-4 border border-red-900/30 bg-red-950/10 rounded-lg">
             <p class="text-[10px] text-red-500 uppercase font-bold text-center mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Market Risk Disclaimer</p>
             <p class="text-[10px] text-zinc-400 text-center leading-tight">Trading in digital assets involves high risk. Please invest only what you can afford to lose. Past performance is not a guarantee of future results.</p>
         </div>
     </div>
 
-    <!-- DEPOSIT MODAL -->
+    <!-- ================= ADMIN DASHBOARD PANEL ================= -->
+    <div id="admin-screen" class="hidden space-y-4 relative z-10 mt-4">
+        <div class="card-bg p-4 rounded-lg flex justify-between items-center border-red-500/30">
+            <div>
+                <h2 class="text-sm font-bold text-red-500"><i class="fa-solid fa-user-shield"></i> Admin Control Center</h2>
+                <p class="text-[11px] text-zinc-400">Manage Manual Deposits</p>
+            </div>
+            <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded">Logout</button>
+        </div>
+        
+        <div class="card-bg p-4 rounded-lg space-y-3">
+            <h3 class="text-xs font-bold gold-text uppercase tracking-wider">Pending Deposit Requests</h3>
+            <div id="admin-requests-list" class="space-y-3 max-h-96 overflow-y-auto text-xs">
+                <p class="text-zinc-500 text-center py-4">No pending deposit requests found.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DEPOSIT MODAL ================= -->
     <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="card-bg w-full max-w-sm p-6 rounded-xl space-y-4">
             <h3 class="text-lg font-bold gold-text">Deposit (USDT)</h3>
             <p class="text-[10px] text-zinc-400">Investment Limit: $100 - $10,000</p>
             <input type="number" id="deposit-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="Amount ($100 - $10,000)">
-            <input type="text" id="deposit-txid" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="TXID Hash">
-            <button onclick="submitDepositData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm Deposit</button>
+            <input type="text" id="deposit-txid" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white font-mono text-xs" placeholder="Paste Blockchain TXID Hash">
+            <button onclick="submitDepositData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Submit Request to Admin</button>
             <button onclick="closeDepositModal()" class="w-full text-zinc-500 text-xs">Cancel</button>
         </div>
     </div>
 
-    <!-- WITHDRAW MODAL -->
+    <!-- ================= WITHDRAW MODAL ================= -->
     <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="card-bg w-full max-w-sm p-6 rounded-xl space-y-4">
             <h3 class="text-lg font-bold gold-text">Withdraw (USDT)</h3>
@@ -96,42 +120,178 @@
         </div>
     </div>
 
+    <!-- ================= SCRIPTS & FIREBASE ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", authDomain: "aurumtrade-ai.firebaseapp.com", projectId: "aurumtrade-ai", storageBucket: "aurumtrade-ai.firebasestorage.app", messagingSenderId: "213283112650", appId: "1:213283112650:web:20bcdd734fffe85d17d633" };
-        const auth = getAuth(initializeApp(firebaseConfig));
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", 
+            authDomain: "aurumtrade-ai.firebaseapp.com", 
+            projectId: "aurumtrade-ai", 
+            storageBucket: "aurumtrade-ai.firebasestorage.app", 
+            messagingSenderId: "213283112650", 
+            appId: "1:213283112650:web:20bcdd734fffe85d17d633" 
+        };
 
-        // Logic
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // आपकी प्रदान की गई ईमेल को यहाँ एडमिन लॉक कर दिया है
+        const ADMIN_EMAIL = "Krishnafilmsjammu@gmail.com"; 
+
+        window.authMode = 'login';
+
         window.switchAuthTab = (mode) => {
             window.authMode = mode;
             document.getElementById('firstname-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('lastname-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('confirm-password-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login' : 'Register';
+            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Verify';
+        };
+
+        window.handleAuth = (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-password').value;
+
+            if(window.authMode === 'signup') {
+                createUserWithEmailAndPassword(auth, email, pass)
+                    .then(u => {
+                        sendEmailVerification(u.user).then(() => {
+                            document.getElementById('sent-email-display').innerText = email;
+                            document.getElementById('auth-screen').classList.add('hidden');
+                            document.getElementById('signup-otp-screen').classList.remove('hidden');
+                        });
+                    }).catch(err => alert(err.message));
+            } else {
+                signInWithEmailAndPassword(auth, email, pass)
+                    .then(u => {
+                        if(u.user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                            showAdminPanel();
+                        } else if(u.user.emailVerified) {
+                            showUserDashboard(u.user);
+                        } else {
+                            alert("Please verify your email first!");
+                            auth.signOut();
+                        }
+                    }).catch(err => alert(err.message));
+            }
         };
 
         window.submitDepositData = () => {
             const amt = parseFloat(document.getElementById('deposit-amount').value);
-            if (amt < 100 || amt > 10000) return alert('Error: Investment must be $100 - $10,000');
-            alert('Deposit Request Submitted!');
-            closeDepositModal();
+            const txid = document.getElementById('deposit-txid').value.trim();
+            
+            if (amt < 100 || amt > 10000 || isNaN(amt)) return alert('Error: Investment must be $100 - $10,000');
+            if(!txid) return alert('Please enter TXID!');
+
+            const newDepositRef = push(ref(db, 'deposits'));
+            set(newDepositRef, {
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                amount: amt,
+                txid: txid,
+                status: 'pending'
+            }).then(() => {
+                alert('🚀 Deposit request sent to Admin! Wait for approval.');
+                closeDepositModal();
+            });
+        };
+
+        function showUserDashboard(user) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('admin-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            document.getElementById('user-uid').innerText = user.email;
+
+            onValue(ref(db, `users/${user.uid}`), (snapshot) => {
+                const data = snapshot.val();
+                const investment = data ? data.totalInvestment || 0 : 0;
+                document.getElementById('dashboard-investment').innerText = '$' + investment.toFixed(2);
+                document.getElementById('dashboard-roi').innerText = '$' + (investment * 0.004).toFixed(2);
+            });
+        }
+
+        function showAdminPanel() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('admin-screen').classList.remove('hidden');
+
+            onValue(ref(db, 'deposits'), (snapshot) => {
+                const listContainer = document.getElementById('admin-requests-list');
+                listContainer.innerHTML = '';
+                const data = snapshot.val();
+                
+                if(!data) {
+                    listContainer.innerHTML = '<p class="text-zinc-500 text-center py-4">No pending deposit requests.</p>';
+                    return;
+                }
+
+                Object.keys(data).forEach(key => {
+                    const req = data[key];
+                    if(req.status === 'pending') {
+                        const div = document.createElement('div');
+                        div.className = "bg-black/50 p-3 rounded border border-zinc-800 space-y-2";
+                        div.innerHTML = `
+                            <p><span class="text-zinc-500">User:</span> <span class="text-white font-bold">${req.email}</span></p>
+                            <p><span class="text-zinc-500">Amount:</span> <span class="text-green-400 font-bold">$${req.amount}</span></p>
+                            <p><span class="text-zinc-500">TXID:</span> <span class="text-amber-400 font-mono text-[10px] break-all">${req.txid}</span></p>
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="approveDeposit('${key}', '${req.uid}', ${req.amount})" class="bg-green-600 text-black font-bold px-3 py-1 rounded text-[11px]">Approve</button>
+                                <button onclick="rejectDeposit('${key}')" class="bg-zinc-800 text-red-400 px-3 py-1 rounded text-[11px]">Reject</button>
+                            </div>
+                        `;
+                        listContainer.appendChild(div);
+                    }
+                });
+            });
+        }
+
+        window.approveDeposit = (key, uid, amount) => {
+            const userLogRef = ref(db, `users/${uid}`);
+            onValue(userLogRef, (snapshot) => {
+                const currentData = snapshot.val();
+                const currentInvestment = currentData ? currentData.totalInvestment || 0 : 0;
+                
+                update(ref(db, `users/${uid}`), {
+                    totalInvestment: currentInvestment + amount
+                });
+            }, { onlyOnce: true });
+
+            remove(ref(db, `deposits/${key}`)).then(() => {
+                alert('Deposit Approved Successfully!');
+            });
+        };
+
+        window.rejectDeposit = (key) => {
+            if(confirm('Are you sure you want to reject this request?')) {
+                remove(ref(db, `deposits/${key}`));
+            }
         };
 
         window.calculateWithdrawFee = () => {
             const amt = parseFloat(document.getElementById('withdraw-amount').value) || 0;
             const fee = amt * 0.05;
             document.getElementById('fee-display').innerText = '$' + fee.toFixed(2);
-            document.getElementById('final-receive-display').innerText = '$' + (amt - fee).toFixed(2);
+            document.getElementById('final-receive-display').innerText = '$' + (amt - fee > 0 ? (amt - fee).toFixed(2) : '0.00');
         };
 
         window.submitWithdrawData = () => {
             const amt = parseFloat(document.getElementById('withdraw-amount').value);
-            if (amt < 10) return alert('Min withdrawal is $10');
+            if (amt < 10 || isNaN(amt)) return alert('Min withdrawal is $10');
             alert('Withdrawal Request Submitted!');
             closeWithdrawModal();
+        };
+
+        window.checkEmailVerificationStatus = () => {
+            auth.currentUser.reload().then(() => {
+                if(auth.currentUser.emailVerified) showUserDashboard(auth.currentUser);
+                else alert('Verification pending. Please check email.');
+            });
         };
 
         window.openDepositModal = () => document.getElementById('deposit-modal').classList.remove('hidden');
@@ -140,20 +300,11 @@
         window.closeWithdrawModal = () => document.getElementById('withdraw-modal').classList.add('hidden');
         window.logout = () => signOut(auth).then(() => location.reload());
 
-        // Auth Logic (Minimal)
-        window.handleAuth = (e) => {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(window.authMode === 'signup') {
-                createUserWithEmailAndPassword(auth, email, pass).then(u => sendEmailVerification(u.user)).then(() => alert('Verification email sent!'));
-            } else {
-                signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
-            }
-        };
-
         onAuthStateChanged(auth, user => {
-            if(user && user.emailVerified) document.getElementById('dashboard-screen').classList.remove('hidden'), document.getElementById('auth-screen').classList.add('hidden');
+            if(user) {
+                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) showAdminPanel();
+                else if(user.emailVerified) showUserDashboard(user);
+            }
         });
     </script>
 </body>
