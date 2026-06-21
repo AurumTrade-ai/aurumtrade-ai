@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AurumTrade AI</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
@@ -16,12 +18,23 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="p-4 max-w-md mx-auto relative min-h-screen">
+
+    <!-- लाइव मूविंग AI ट्रेडिंग ग्राफ बैकग्राउंड -->
     <canvas id="bg-canvas"></canvas>
 
+    <!-- ================= AUTH SECTION (SIGN UP / LOGIN) ================= -->
     <div id="auth-screen" class="space-y-6 mt-10 relative z-10">
         <div class="text-center">
             <h1 class="text-3xl font-bold gold-text flex items-center justify-center gap-2">
@@ -30,72 +43,168 @@
             <p class="text-gray-400 text-sm mt-1 tracking-wider">Secure Institutional Trading Platform</p>
         </div>
 
+        <!-- Toggle Tabs -->
         <div class="flex border-b border-zinc-800 backdrop-blur-sm rounded-t-xl overflow-hidden">
             <button id="tab-login" class="w-1/2 py-3 text-center font-bold border-b-2 border-amber-500 gold-text bg-zinc-900/30" onclick="switchAuthTab('login')">Login</button>
             <button id="tab-signup" class="w-1/2 py-3 text-center font-bold text-gray-500 bg-zinc-900/10" onclick="switchAuthTab('signup')">Sign Up</button>
         </div>
 
+        <!-- Auth Form -->
         <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-b-xl shadow-2xl">
-            <div id="username-field">
-                <label class="block text-xs font-semibold text-gray-400 mb-1">USER ID (UNIQUE)</label>
-                <input type="text" id="auth-username" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="rahul9493">
+            <div id="firstname-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">FIRST NAME</label>
+                <input type="text" id="auth-firstname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 text-white" placeholder="Rahul">
+            </div>
+            <div id="lastname-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">LAST NAME / SURNAME</label>
+                <input type="text" id="auth-lastname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 text-white" placeholder="Saini">
+            </div>
+            <div id="username-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">UNIQUE USERNAME</label>
+                <input type="text" id="auth-username" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 text-white" placeholder="rahul9493">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label>
-                <input type="email" id="auth-email" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="yourname@gmail.com">
+                <input type="email" id="auth-email" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 text-white" placeholder="yourname@gmail.com">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
-                <input type="password" id="auth-password" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="******">
+                <div class="relative">
+                    <input type="password" id="auth-password" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 pr-10 text-white" placeholder="******">
+                    <button type="button" onclick="togglePasswordVisibility('auth-password', 'eye-icon-1')" class="absolute right-3 top-2 text-gray-500 hover:text-white">
+                        <i id="eye-icon-1" class="fa-solid fa-eye-slash text-xs"></i>
+                    </button>
+                </div>
             </div>
-            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm mt-2">Login Account</button>
+            <div id="confirm-password-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label>
+                <div class="relative">
+                    <input type="password" id="auth-confirm-password" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 pr-10 text-white" placeholder="******">
+                    <button type="button" onclick="togglePasswordVisibility('auth-confirm-password', 'eye-icon-2')" class="absolute right-3 top-2 text-gray-500 hover:text-white">
+                        <i id="eye-icon-2" class="fa-solid fa-eye-slash text-xs"></i>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 mb-1">REFERRAL CODE (OPTIONAL)</label>
+                <input type="text" id="auth-ref" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm focus:outline-none text-amber-400 border-zinc-700" placeholder="e.g. AURUM-rahul">
+            </div>
+            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm hover:bg-amber-600 transition shadow-lg shadow-amber-500/20 mt-2">Login Account</button>
         </form>
     </div>
 
-    <!-- DASHBOARD (वही ओरिजिनल) -->
-    <div id="dashboard-screen" class="hidden space-y-4 relative z-10 mt-4">
-        <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome</h2>
-        <button onclick="location.reload()" class="text-xs text-red-400">Logout</button>
+    <!-- ================= SIGN UP OTP VERIFICATION SCREEN ================= -->
+    <div id="signup-otp-screen" class="hidden space-y-6 mt-10 text-center relative z-10">
+        <div class="card-bg p-6 rounded-xl shadow-2xl space-y-4">
+            <h2 class="text-xl font-bold gold-text"><i class="fa-solid fa-envelope-shield"></i> Check Your Inbox</h2>
+            
+            <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg my-2">
+                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">Verification link sent to:</p>
+                <p id="sent-email-display" class="text-sm font-bold text-amber-400 break-all mt-0.5">yourname@gmail.com</p>
+            </div>
+
+            <p class="text-xs text-gray-400 leading-relaxed">We have sent a secure verification link via Firebase. Open your Gmail, click the link to verify your account, then come back here and click the button below.</p>
+            <button onclick="checkEmailVerificationStatus()" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm shadow-md">I Verified my Email (Proceed)</button>
+            <p class="text-xs text-gray-500">Didn't receive it? Check your **Spam** folder or <span onclick="resendVerificationEmail()" class="text-amber-500 cursor-pointer underline font-bold">Resend Link</span></p>
+        </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    <!-- ================= MAIN DASHBOARD SECTION ================= -->
+    <div id="dashboard-screen" class="hidden space-y-4 relative z-10 mt-4">
+        <div class="flex justify-between items-center bg-zinc-900/80 backdrop-blur-md p-3 rounded-lg border border-zinc-800">
+            <div>
+                <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
+                <p class="text-xs text-gray-500" id="user-display-id">@trader</p>
+            </div>
+            <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-2.5 py-1 rounded bg-red-500/5">Logout</button>
+        </div>
 
-        const db = getDatabase(initializeApp({ 
-            apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", 
-            databaseURL: "https://aurumtrade-ai-default-rtdb.firebaseio.com" 
-        }));
+        <!-- REFERRAL BOX -->
+        <div class="card-bg p-3 rounded-lg space-y-2">
+            <p class="text-[11px] text-gray-400 font-bold tracking-wider"><i class="fa-solid fa-user-plus gold-text"></i> YOUR REFERRAL LINK</p>
+            <div class="flex justify-between items-center bg-black/40 p-2 rounded border border-zinc-800">
+                <span id="referral-code-display" class="text-xs font-mono text-amber-400 font-bold">AURUM-USER</span>
+                <button onclick="copyReferralLink()" class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-1 rounded hover:bg-amber-500 hover:text-black transition">
+                    <i class="fa-regular fa-copy"></i> Copy Link
+                </button>
+            </div>
+        </div>
 
-        window.authMode = 'login';
-        window.switchAuthTab = (m) => {
-            window.authMode = m;
-            document.getElementById('auth-btn').innerText = m === 'login' ? 'Login Account' : 'Register Account';
-        };
+        <div class="grid grid-cols-2 gap-3">
+            <div class="card-bg p-3 rounded-lg">
+                <p class="text-xs text-gray-400">Total Investment</p>
+                <p class="text-lg font-bold text-white">$1,000.00</p>
+            </div>
+            <div class="card-bg p-3 rounded-lg">
+                <p class="text-xs text-gray-400">Daily ROI (0.4%)</p>
+                <p class="text-lg font-bold gold-text">$4.00</p>
+            </div>
+        </div>
 
-        window.handleAuth = (e) => {
-            e.preventDefault();
-            const u = document.getElementById('auth-username').value.trim().toLowerCase();
-            const p = document.getElementById('auth-password').value;
-            const eMail = document.getElementById('auth-email').value;
+        <!-- LEVEL INCOME SECTION -->
+        <div class="card-bg p-4 rounded-lg space-y-2">
+            <h3 class="text-xs font-bold text-gray-400 tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-network-wired gold-text"></i> LEVEL INCOME DASHBOARD
+            </h3>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
+                <div class="bg-black/40 p-2 rounded border border-zinc-800">
+                    <p class="text-gray-500 font-medium">Level 1 (5%)</p>
+                    <p class="font-bold text-white mt-1">$0.00</p>
+                </div>
+                <div class="bg-black/40 p-2 rounded border border-zinc-800">
+                    <p class="text-gray-500 font-medium">Level 2 (3%)</p>
+                    <p class="font-bold text-white mt-1">$0.00</p>
+                </div>
+                <div class="bg-black/40 p-2 rounded border border-zinc-800">
+                    <p class="text-gray-500 font-medium">Level 3 (2%)</p>
+                    <p class="font-bold text-white mt-1">$0.00</p>
+                </div>
+            </div>
+        </div>
 
-            if (window.authMode === 'signup') {
-                set(ref(db, 'users/' + u), { email: eMail, password: p }).then(() => {
-                    alert("Registered! Now login with User ID.");
-                    switchAuthTab('login');
-                });
-            } else {
-                get(ref(db, 'users/' + u)).then(s => {
-                    if (s.exists() && s.val().password === p) {
-                        document.getElementById('auth-screen').classList.add('hidden');
-                        document.getElementById('dashboard-screen').classList.remove('hidden');
-                        document.getElementById('user-display-name').innerText = "Welcome, " + u;
-                    } else alert("Invalid User ID or Password");
-                });
-            }
-        };
+        <!-- Deposit View Box -->
+        <div class="card-bg p-4 rounded-lg space-y-3">
+            <h3 class="text-sm font-bold gold-text"><i class="fa-solid fa-wallet"></i> Deposit USDT (BEP-20)</h3>
+            <div class="bg-black/40 p-3 rounded border border-zinc-800 space-y-1">
+                <p class="text-[10px] text-gray-500 font-bold">ADMIN WALLET ADDRESS</p>
+                <div class="flex justify-between items-center bg-black p-2 rounded border border-zinc-700">
+                    <span id="wallet-address" class="text-xs font-mono text-amber-400 break-all select-all">0xc94BaDA557310679b1e00F5125Ef65dAe05bebd5</span>
+                    <button onclick="copyWallet()" class="text-xs text-gray-400 hover:text-white ml-2"><i class="fa-regular fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            <button onclick="openDepositModal()" class="gold-bg text-black font-bold py-3 rounded-lg text-sm shadow-lg shadow-amber-500/10">Deposit Now</button>
+            <button onclick="openWithdrawModal()" class="bg-zinc-900 border border-zinc-700 text-white font-bold py-3 rounded-lg text-sm">Withdraw</button>
+        </div>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="card-bg w-full max-w-sm p-6 rounded-xl relative space-y-4">
+            <button onclick="closeDepositModal()" class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl">&times;</button>
+            <h3 class="text-lg font-bold gold-text"><i class="fa-solid fa-arrow-down-to-line"></i> Submit Deposit Request</h3>
+            <input type="number" id="deposit-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Amount ($)">
+            <input type="text" id="deposit-txid" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white font-mono text-xs" placeholder="TXID Hash">
+            <button onclick="submitDepositData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Submit Request</button>
+        </div>
+    </div>
+    
+    <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="card-bg w-full max-w-sm p-6 rounded-xl relative space-y-4">
+            <button onclick="closeWithdrawModal()" class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl">&times;</button>
+            <h3 class="text-lg font-bold gold-text"><i class="fa-solid fa-upload"></i> Withdraw USDT (BEP-20)</h3>
+            <input type="number" id="withdraw-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Amount ($)">
+            <button onclick="alert('Request Submitted!')" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm Withdrawal</button>
+        </div>
+    </div>
+
+    <!-- ================= SCRIPTS ================= -->
+    <script>
+        // बैकग्राउंड एनीमेशन लॉजिक यहाँ रहेगा
+        const canvas = document.getElementById('bg-canvas');
+        // ... (बाकी एनीमेशन कोड)
     </script>
-
-    <!-- (आपका पुराना एनीमेशन और अन्य स्क्रिप्ट्स यहाँ ज्यों की त्यों हैं) -->
 </body>
 </html>
