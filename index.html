@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AurumTrade AI</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #121212; color: #ffffff; padding: 15px; }
+        
+        /* Header Styling */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #2a2a2a; }
+        .logo { color: #ffd700; font-weight: bold; font-size: 20px; }
+        .wallet-badge { background-color: #1e1e1e; padding: 8px 12px; border-radius: 20px; font-size: 14px; border: 1px solid #ffd700; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .stat-card { background-color: #1e1e1e; padding: 15px; border-radius: 10px; border: 1px solid #2a2a2a; }
+        .stat-card p { color: #888; font-size: 12px; margin-bottom: 5px; }
+        .stat-card h3 { color: #ffd700; font-size: 18px; }
+
+        /* Capping Progress Bar */
+        .capping-box { background-color: #1e1e1e; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #2a2a2a; }
+        .capping-title { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; color: #ccc; }
+        .progress-bar-bg { background-color: #333; height: 12px; border-radius: 6px; overflow: hidden; }
+        .progress-bar-fill { background: linear-gradient(90deg, #ffd700, #ffa500); height: 100%; width: 24%; }
+
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
+        .btn-deposit { background-color: #ffd700; color: #000; }
+        .btn-withdraw { background-color: #1e1e1e; color: #ffd700; border: 1px solid #ffd700; }
+
+        /* Modal (Popup) Styling */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
+        .modal-content { background-color: #1e1e1e; padding: 20px; border-radius: 15px; border: 1px solid #ffd700; width: 100%; max-width: 400px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-title { color: #ffd700; font-size: 18px; font-weight: bold; }
+        .close-btn { color: #fff; font-size: 24px; cursor: pointer; }
+        
+        /* Input & Forms */
+        .address-box { background-color: #2a2a2a; padding: 10px; border-radius: 8px; font-size: 12px; word-break: break-all; border: 1px dashed #ffd700; margin-bottom: 15px; color: #ffd700; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 10px; background-color: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; }
+        .form-group input:focus { border-color: #ffd700; outline: none; }
+        .submit-btn { width: 100%; padding: 12px; background-color: #ffd700; color: #000; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-otp { background-color: #444; color: #fff; border: 1px solid #ffd700; padding: 8px; border-radius: 6px; font-size: 11px; cursor: pointer; margin-top: 5px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header -->
+    <div class="header">
+        <div class="logo">AurumTrade AI</div>
+        <div class="wallet-badge">💰 $0.00 USDT</div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <p>Total Investment</p>
+            <h3>$1,000.00</h3>
+        </div>
+        <div class="stat-card">
+            <p>Daily ROI (0.4%)</p>
+            <h3>$4.00</h3>
+        </div>
+        <div class="stat-card">
+            <p>Binary Bonus</p>
+            <h3>$50.00</h3>
+        </div>
+        <div class="stat-card">
+            <p>Total Earned</p>
+            <h3>$240.00</h3>
+        </div>
+    </div>
+
+    <!-- 3x Capping Limit -->
+    <div class="capping-box">
+        <div class="capping-title">
+            <span>3x Earnings Limit (24%)</span>
+            <span>$240 / $3000 USDT</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- Quick Buttons -->
+    <div class="btn-group">
+        <button class="btn btn-deposit" onclick="openModal('depositModal')">📥 Deposit</button>
+        <button class="btn btn-withdraw" onclick="openModal('withdrawModal')">📤 Withdraw</button>
+    </div>
+
+    <!-- Deposit Modal (Popup Form) -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📥 Deposit USDT (BEP-20)</div>
+                <div class="close-btn" onclick="closeModal('depositModal')">&times;</div>
+            </div>
+            <label style="font-size: 12px; color: #aaa; display:block; margin-bottom:5px;">Admin Wallet Address:</label>
+            <div class="address-box">0x71C...YOUR_BEP20_WALLET_ADDRESS...319</div>
+            <form onsubmit="submitDeposit(event)">
+                <div class="form-group">
+                    <label>Amount (USDT)</label>
+                    <input type="number" id="depAmount" placeholder="Minimum 10 USDT" required min="10">
+                </div>
+                <div class="form-group">
+                    <label>Transaction ID / Hash (TXID)</label>
+                    <input type="text" id="txid" placeholder="Paste your TXID here" required>
+                </div>
+                <button type="submit" class="submit-btn">Submit Deposit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal (Popup Form with OTP) -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📤 Withdraw USDT (BEP-20)</div>
+                <div class="close-btn" onclick="closeModal('withdrawModal')">&times;</div>
+            </div>
+            <form onsubmit="submitWithdraw(event)">
+                <div class="form-group">
+                    <label>Withdraw Amount (USDT)</label>
+                    <input type="number" id="withAmount" placeholder="Enter amount" required min="5">
+                </div>
+                <div class="form-group">
+                    <label>Your USDT BEP-20 Wallet Address</label>
+                    <input type="text" id="userAddress" placeholder="0x..." required>
+                </div>
+                <div class="form-group" style="border-top: 1px solid #333; padding-top: 10px;">
+                    <label>Security Verification</label>
+                    <button type="button" class="btn-otp" onclick="alert('OTP sent to your registered Gmail!')">📩 Send OTP to Gmail</button>
+                    <input type="text" id="otpCode" placeholder="Enter 6-Digit OTP" required style="margin-top: 10px;">
+                </div>
+                <button type="submit" class="submit-btn" style="background-color: #ffa500;">Confirm & Withdraw</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Controls -->
+    <script>
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function submitDeposit(event) {
+            event.preventDefault();
+            const amount = document.getElementById('depAmount').value;
+            const tx = document.getElementById('txid').value;
+            alert(`Success!\nDeposit of $${amount} USDT (TXID: ${tx}) submitted for Admin verification.`);
+            closeModal('depositModal');
+        }
+
+        function submitWithdraw(event) {
+            event.preventDefault();
+            const amount = document.getElementById('withAmount').value;
+            const address = document.getElementById('userAddress').value;
+            const otp = document.getElementById('otpCode').value;
+            alert(`Success!\nWithdraw request for $${amount} USDT to address ${address} has been recorded.\nStatus: Pending Admin Approval.`);
+            closeModal('withdrawModal');
+        }
+    </script>
+
+</body>
+</html>
