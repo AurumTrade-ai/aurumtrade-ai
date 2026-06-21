@@ -3,309 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AurumTrade AI - Trading Platform</title>
+    <title>AurumTrade AI - Official</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
-        .gold-text { color: #f39c12; text-shadow: 0 0 10px rgba(243, 156, 18, 0.2); }
+        body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; }
+        .gold-text { color: #f39c12; }
         .gold-bg { background-color: #f39c12; }
-        .card-bg { background-color: rgba(26, 26, 26, 0.75); border: 1px solid rgba(243, 156, 18, 0.15); backdrop-filter: blur(12px); }
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .card-bg { background-color: rgba(26, 26, 26, 0.8); border: 1px solid rgba(243, 156, 18, 0.2); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="p-4 max-w-md mx-auto relative min-h-screen">
+<body class="p-4 max-w-md mx-auto min-h-screen">
 
-    <canvas id="bg-canvas"></canvas>
-
-    <!-- ================= AUTH SCREEN ================= -->
-    <div id="auth-screen" class="space-y-6 mt-10 relative z-10">
-        <div class="text-center">
-            <h1 class="text-3xl font-bold gold-text flex items-center justify-center gap-2"><i class="fa-solid fa-chart-line text-2xl animate-pulse"></i> AurumTrade AI</h1>
-            <p class="text-gray-400 text-sm mt-1 tracking-wider">Secure Institutional Trading Platform</p>
+    <div id="auth-screen" class="space-y-6 mt-10">
+        <h1 class="text-3xl font-bold gold-text text-center"><i class="fa-solid fa-chart-line"></i> AurumTrade AI</h1>
+        <div class="flex border-b border-zinc-800">
+            <button id="tab-login" class="w-1/2 py-3 font-bold border-b-2 border-amber-500" onclick="switchAuthTab('login')">Login</button>
+            <button id="tab-signup" class="w-1/2 py-3 font-bold text-gray-500" onclick="switchAuthTab('signup')">Sign Up</button>
         </div>
-        <div class="flex border-b border-zinc-800 rounded-t-xl overflow-hidden">
-            <button id="tab-login" class="w-1/2 py-3 text-center font-bold border-b-2 border-amber-500 gold-text bg-zinc-900/30" onclick="switchAuthTab('login')">Login</button>
-            <button id="tab-signup" class="w-1/2 py-3 text-center font-bold text-gray-500 bg-zinc-900/10" onclick="switchAuthTab('signup')">Sign Up</button>
-        </div>
-        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-b-xl shadow-2xl">
-            <div id="firstname-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">FIRST NAME</label><input type="text" id="auth-firstname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Rahul"></div>
-            <div id="lastname-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">LAST NAME</label><input type="text" id="auth-lastname" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Saini"></div>
-            <div id="username-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">USERNAME</label><input type="text" id="auth-username" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="rahul123"></div>
-            <div><label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label><input type="email" id="auth-email" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="name@gmail.com"></div>
-            <div><label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label><input type="password" id="auth-password" required class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="******"></div>
-            <div id="confirm-password-field" class="hidden"><label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label><input type="password" id="auth-confirm-password" class="w-full bg-black/40 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="******"></div>
-            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm mt-2">Login Account</button>
+        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-b-xl">
+            <div id="username-field" class="hidden"><label class="block text-xs text-gray-400">USERNAME</label><input type="text" id="auth-username" class="w-full bg-black/50 p-2 rounded text-white"></div>
+            <div><label class="block text-xs text-gray-400">GMAIL ADDRESS</label><input type="email" id="auth-email" required class="w-full bg-black/50 p-2 rounded text-white"></div>
+            <div><label class="block text-xs text-gray-400">PASSWORD</label><input type="password" id="auth-password" required class="w-full bg-black/50 p-2 rounded text-white"></div>
+            <button type="button" onclick="sendPasswordReset()" class="text-[10px] text-amber-500 underline">Forgot Password?</button>
+            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2 rounded">Login</button>
         </form>
     </div>
 
-    <!-- ================= OTP / VERIFICATION SCREEN ================= -->
-    <div id="signup-otp-screen" class="hidden space-y-6 mt-10 text-center relative z-10">
-        <div class="card-bg p-6 rounded-xl shadow-2xl space-y-4">
-            <h2 class="text-xl font-bold gold-text"><i class="fa-solid fa-envelope-shield"></i> Check Your Inbox</h2>
-            <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg my-2">
-                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">Verification link sent to:</p>
-                <p id="sent-email-display" class="text-sm font-bold text-amber-400 break-all mt-0.5"></p>
-            </div>
-            <button onclick="checkEmailVerificationStatus()" class="w-full gold-bg text-black font-bold py-2.5 rounded text-sm">I Verified my Email</button>
-        </div>
-    </div>
-
-    <!-- ================= USER DASHBOARD ================= -->
-    <div id="dashboard-screen" class="hidden space-y-4 relative z-10 mt-4">
+    <div id="dashboard-screen" class="hidden space-y-4 mt-6">
         <div class="card-bg p-4 rounded-lg flex justify-between items-center">
-            <div>
-                <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
-                <p class="text-xs text-zinc-500" id="user-uid"></p>
-            </div>
-            <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded bg-red-500/5">Logout</button>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Total Investment</p><p id="dashboard-investment" class="text-lg font-bold text-white">$0.00</p></div>
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI (0.4%)</p><p id="dashboard-roi" class="text-lg font-bold gold-text">$0.00</p></div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="openDepositModal()" class="gold-bg text-black font-bold py-3 rounded-lg text-sm">Deposit Now</button>
-            <button onclick="openWithdrawModal()" class="bg-zinc-800 text-white font-bold py-3 rounded-lg text-sm">Withdraw</button>
-        </div>
-        
-        <div class="mt-4 p-4 border border-red-900/30 bg-red-950/10 rounded-lg">
-            <p class="text-[10px] text-red-500 uppercase font-bold text-center mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Market Risk Disclaimer</p>
-            <p class="text-[10px] text-zinc-400 text-center leading-tight">Trading in digital assets involves high risk. Please invest only what you can afford to lose. Past performance is not a guarantee of future results.</p>
-        </div>
-    </div>
-
-    <!-- ================= ADMIN DASHBOARD PANEL ================= -->
-    <div id="admin-screen" class="hidden space-y-4 relative z-10 mt-4">
-        <div class="card-bg p-4 rounded-lg flex justify-between items-center border-red-500/30">
-            <div>
-                <h2 class="text-sm font-bold text-red-500"><i class="fa-solid fa-user-shield"></i> Admin Control Center</h2>
-                <p class="text-[11px] text-zinc-400">Manage Manual Deposits</p>
-            </div>
+            <div><h2 class="text-sm font-bold gold-text" id="user-display-name">@username</h2></div>
             <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded">Logout</button>
         </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Investment</p><p id="dashboard-investment" class="text-lg font-bold">$0.00</p></div>
+            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI</p><p id="dashboard-roi" class="text-lg font-bold gold-text">$0.00</p></div>
+        </div>
         
-        <div class="card-bg p-4 rounded-lg space-y-3">
-            <h3 class="text-xs font-bold gold-text uppercase tracking-wider">Pending Deposit Requests</h3>
-            <div id="admin-requests-list" class="space-y-3 max-h-96 overflow-y-auto text-xs">
-                <p class="text-zinc-500 text-center py-4">No pending deposit requests found.</p>
-            </div>
+        <div class="card-bg p-4 rounded-lg space-y-2">
+            <h3 class="text-xs font-bold uppercase">USDT (BEP20) Wallet</h3>
+            <input type="text" id="wallet-input" class="w-full bg-black/50 p-2 rounded text-xs" placeholder="0x...">
+            <button onclick="updateWallet()" class="w-full bg-zinc-800 text-amber-500 text-xs py-2 rounded">Verify/Update Address</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="openModal('deposit-modal')" class="gold-bg text-black font-bold py-3 rounded text-sm">Deposit</button>
+            <button onclick="openModal('withdraw-modal')" class="bg-zinc-800 text-white font-bold py-3 rounded text-sm">Withdraw</button>
         </div>
     </div>
 
-    <!-- ================= DEPOSIT MODAL ================= -->
-    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="card-bg w-full max-w-sm p-6 rounded-xl space-y-4">
-            <h3 class="text-lg font-bold gold-text">Deposit (USDT)</h3>
-            <p class="text-[10px] text-zinc-400">Investment Limit: $100 - $10,000</p>
-            <input type="number" id="deposit-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="Amount ($100 - $10,000)">
-            <input type="text" id="deposit-txid" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white font-mono text-xs" placeholder="Paste Blockchain TXID Hash">
-            <button onclick="submitDepositData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Submit Request to Admin</button>
-            <button onclick="closeDepositModal()" class="w-full text-zinc-500 text-xs">Cancel</button>
+    <div id="admin-screen" class="hidden space-y-4 mt-6">
+        <h2 class="text-red-500 font-bold text-center">ADMIN CONTROL CENTER</h2>
+        <div id="admin-requests-list" class="space-y-3"></div>
+        <button onclick="logout()" class="w-full bg-red-900 text-white py-2 rounded">Logout</button>
+    </div>
+
+    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/90 p-6 flex items-center justify-center">
+        <div class="card-bg w-full p-6 rounded-xl space-y-4">
+            <h3 class="gold-text font-bold">Deposit USDT (BEP20)</h3>
+            <input type="number" id="deposit-amount" class="w-full bg-black p-2 rounded" placeholder="Amount">
+            <input type="text" id="deposit-txid" class="w-full bg-black p-2 rounded" placeholder="TXID">
+            <button onclick="submitDeposit()" class="w-full gold-bg text-black font-bold py-2 rounded">Submit</button>
+            <button onclick="closeModal('deposit-modal')" class="w-full text-zinc-500">Close</button>
         </div>
     </div>
 
-    <!-- ================= WITHDRAW MODAL ================= -->
-    <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="card-bg w-full max-w-sm p-6 rounded-xl space-y-4">
-            <h3 class="text-lg font-bold gold-text">Withdraw (USDT)</h3>
-            <p class="text-[10px] text-zinc-400">Min Withdraw: $10 | 5% Fee Applies</p>
-            <input type="number" id="withdraw-amount" oninput="calculateWithdrawFee()" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-white" placeholder="Enter Amount">
-            <div class="bg-zinc-950 p-3 rounded text-xs text-zinc-400">
-                <p>Fee (5%): <span id="fee-display" class="text-white">$0.00</span></p>
-                <p class="text-amber-500 font-bold">You will receive: <span id="final-receive-display">$0.00</span></p>
-            </div>
-            <button onclick="submitWithdrawData()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm Withdraw</button>
-            <button onclick="closeWithdrawModal()" class="w-full text-zinc-500 text-xs">Cancel</button>
-        </div>
-    </div>
-
-    <!-- ================= SCRIPTS & FIREBASE ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", 
-            authDomain: "aurumtrade-ai.firebaseapp.com", 
-            projectId: "aurumtrade-ai", 
-            storageBucket: "aurumtrade-ai.firebasestorage.app", 
-            messagingSenderId: "213283112650", 
-            appId: "1:213283112650:web:20bcdd734fffe85d17d633" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", authDomain: "aurumtrade-ai.firebaseapp.com", projectId: "aurumtrade-ai", storageBucket: "aurumtrade-ai.firebasestorage.app", messagingSenderId: "213283112650", appId: "1:213283112650:web:20bcdd734fffe85d17d633" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-
-        // आपकी प्रदान की गई ईमेल को यहाँ एडमिन लॉक कर दिया है
-        const ADMIN_EMAIL = "Krishnafilmsjammu@gmail.com"; 
-
-        window.authMode = 'login';
+        const ADMIN_EMAIL = "krishnafilmsjammu@gmail.com";
 
         window.switchAuthTab = (mode) => {
-            window.authMode = mode;
-            document.getElementById('firstname-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('lastname-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('confirm-password-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Verify';
+            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login' : 'Register';
+            window.authMode = mode;
         };
 
         window.handleAuth = (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value.trim();
+            const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-password').value;
-
             if(window.authMode === 'signup') {
-                createUserWithEmailAndPassword(auth, email, pass)
-                    .then(u => {
-                        sendEmailVerification(u.user).then(() => {
-                            document.getElementById('sent-email-display').innerText = email;
-                            document.getElementById('auth-screen').classList.add('hidden');
-                            document.getElementById('signup-otp-screen').classList.remove('hidden');
-                        });
-                    }).catch(err => alert(err.message));
+                createUserWithEmailAndPassword(auth, email, pass).then(u => {
+                    set(ref(db, `users/${u.user.uid}`), { username: document.getElementById('auth-username').value, email, totalInvestment: 0 });
+                    alert("Registered!");
+                });
             } else {
-                signInWithEmailAndPassword(auth, email, pass)
-                    .then(u => {
-                        if(u.user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                            showAdminPanel();
-                        } else if(u.user.emailVerified) {
-                            showUserDashboard(u.user);
-                        } else {
-                            alert("Please verify your email first!");
-                            auth.signOut();
-                        }
-                    }).catch(err => alert(err.message));
+                signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
             }
         };
 
-        window.submitDepositData = () => {
-            const amt = parseFloat(document.getElementById('deposit-amount').value);
-            const txid = document.getElementById('deposit-txid').value.trim();
-            
-            if (amt < 100 || amt > 10000 || isNaN(amt)) return alert('Error: Investment must be $100 - $10,000');
-            if(!txid) return alert('Please enter TXID!');
-
-            const newDepositRef = push(ref(db, 'deposits'));
-            set(newDepositRef, {
-                uid: auth.currentUser.uid,
-                email: auth.currentUser.email,
-                amount: amt,
-                txid: txid,
-                status: 'pending'
-            }).then(() => {
-                alert('🚀 Deposit request sent to Admin! Wait for approval.');
-                closeDepositModal();
-            });
+        window.sendPasswordReset = () => sendPasswordResetEmail(auth, document.getElementById('auth-email').value).then(() => alert("Link Sent!"));
+        
+        window.updateWallet = () => {
+            const addr = document.getElementById('wallet-input').value;
+            if(!addr.startsWith('0x') || addr.length !== 42) return alert("Invalid BEP20 Address!");
+            set(ref(db, `pendingWalletChanges/${auth.currentUser.uid}`), { newAddress: addr }).then(() => alert("Verification request sent to Admin!"));
         };
 
-        function showUserDashboard(user) {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('admin-screen').classList.add('hidden');
-            document.getElementById('dashboard-screen').classList.remove('hidden');
-            document.getElementById('user-uid').innerText = user.email;
-
-            onValue(ref(db, `users/${user.uid}`), (snapshot) => {
-                const data = snapshot.val();
-                const investment = data ? data.totalInvestment || 0 : 0;
-                document.getElementById('dashboard-investment').innerText = '$' + investment.toFixed(2);
-                document.getElementById('dashboard-roi').innerText = '$' + (investment * 0.004).toFixed(2);
-            });
-        }
-
-        function showAdminPanel() {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('dashboard-screen').classList.add('hidden');
-            document.getElementById('admin-screen').classList.remove('hidden');
-
-            onValue(ref(db, 'deposits'), (snapshot) => {
-                const listContainer = document.getElementById('admin-requests-list');
-                listContainer.innerHTML = '';
-                const data = snapshot.val();
-                
-                if(!data) {
-                    listContainer.innerHTML = '<p class="text-zinc-500 text-center py-4">No pending deposit requests.</p>';
-                    return;
-                }
-
-                Object.keys(data).forEach(key => {
-                    const req = data[key];
-                    if(req.status === 'pending') {
-                        const div = document.createElement('div');
-                        div.className = "bg-black/50 p-3 rounded border border-zinc-800 space-y-2";
-                        div.innerHTML = `
-                            <p><span class="text-zinc-500">User:</span> <span class="text-white font-bold">${req.email}</span></p>
-                            <p><span class="text-zinc-500">Amount:</span> <span class="text-green-400 font-bold">$${req.amount}</span></p>
-                            <p><span class="text-zinc-500">TXID:</span> <span class="text-amber-400 font-mono text-[10px] break-all">${req.txid}</span></p>
-                            <div class="flex gap-2 pt-1">
-                                <button onclick="approveDeposit('${key}', '${req.uid}', ${req.amount})" class="bg-green-600 text-black font-bold px-3 py-1 rounded text-[11px]">Approve</button>
-                                <button onclick="rejectDeposit('${key}')" class="bg-zinc-800 text-red-400 px-3 py-1 rounded text-[11px]">Reject</button>
-                            </div>
-                        `;
-                        listContainer.appendChild(div);
-                    }
-                });
-            });
-        }
-
-        window.approveDeposit = (key, uid, amount) => {
-            const userLogRef = ref(db, `users/${uid}`);
-            onValue(userLogRef, (snapshot) => {
-                const currentData = snapshot.val();
-                const currentInvestment = currentData ? currentData.totalInvestment || 0 : 0;
-                
-                update(ref(db, `users/${uid}`), {
-                    totalInvestment: currentInvestment + amount
-                });
-            }, { onlyOnce: true });
-
-            remove(ref(db, `deposits/${key}`)).then(() => {
-                alert('Deposit Approved Successfully!');
-            });
+        window.submitDeposit = () => {
+            push(ref(db, 'deposits'), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: document.getElementById('deposit-amount').value, txid: document.getElementById('deposit-txid').value, status: 'pending' }).then(() => alert("Submitted!"));
         };
 
-        window.rejectDeposit = (key) => {
-            if(confirm('Are you sure you want to reject this request?')) {
-                remove(ref(db, `deposits/${key}`));
-            }
-        };
-
-        window.calculateWithdrawFee = () => {
-            const amt = parseFloat(document.getElementById('withdraw-amount').value) || 0;
-            const fee = amt * 0.05;
-            document.getElementById('fee-display').innerText = '$' + fee.toFixed(2);
-            document.getElementById('final-receive-display').innerText = '$' + (amt - fee > 0 ? (amt - fee).toFixed(2) : '0.00');
-        };
-
-        window.submitWithdrawData = () => {
-            const amt = parseFloat(document.getElementById('withdraw-amount').value);
-            if (amt < 10 || isNaN(amt)) return alert('Min withdrawal is $10');
-            alert('Withdrawal Request Submitted!');
-            closeWithdrawModal();
-        };
-
-        window.checkEmailVerificationStatus = () => {
-            auth.currentUser.reload().then(() => {
-                if(auth.currentUser.emailVerified) showUserDashboard(auth.currentUser);
-                else alert('Verification pending. Please check email.');
-            });
-        };
-
-        window.openDepositModal = () => document.getElementById('deposit-modal').classList.remove('hidden');
-        window.closeDepositModal = () => document.getElementById('deposit-modal').classList.add('hidden');
-        window.openWithdrawModal = () => document.getElementById('withdraw-modal').classList.remove('hidden');
-        window.closeWithdrawModal = () => document.getElementById('withdraw-modal').classList.add('hidden');
-        window.logout = () => signOut(auth).then(() => location.reload());
-
-        onAuthStateChanged(auth, user => {
+        onAuthStateChanged(auth, (user) => {
             if(user) {
-                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) showAdminPanel();
-                else if(user.emailVerified) showUserDashboard(user);
+                if(user.email === ADMIN_EMAIL) {
+                    document.getElementById('admin-screen').classList.remove('hidden');
+                    onValue(ref(db, 'deposits'), (s) => { /* Render logic here */ });
+                } else {
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    onValue(ref(db, `users/${user.uid}`), (s) => {
+                        const d = s.val();
+                        document.getElementById('user-display-name').innerText = "@" + d.username;
+                        document.getElementById('dashboard-investment').innerText = "$" + d.totalInvestment;
+                    });
+                }
+                document.getElementById('auth-screen').classList.add('hidden');
             }
         });
+
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
