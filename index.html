@@ -2,135 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AurumTrade AI - Official</title>
+    <title>AurumTrade AI - Login</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #050505; color: #ffffff; font-family: 'Poppins', sans-serif; }
+        body { background-color: #050505; color: #fff; font-family: sans-serif; }
+        .card-bg { background-color: #1a1a1a; border: 1px solid #333; }
         .gold-text { color: #f39c12; }
         .gold-bg { background-color: #f39c12; }
-        .card-bg { background-color: rgba(26, 26, 26, 0.8); border: 1px solid rgba(243, 156, 18, 0.2); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="p-4 max-w-md mx-auto min-h-screen">
+<body class="p-6 max-w-sm mx-auto">
 
-    <div id="auth-screen" class="space-y-6 mt-10">
-        <h1 class="text-3xl font-bold gold-text text-center"><i class="fa-solid fa-chart-line"></i> AurumTrade AI</h1>
-        <div class="flex border-b border-zinc-800">
-            <button id="tab-login" class="w-1/2 py-3 font-bold border-b-2 border-amber-500" onclick="switchAuthTab('login')">Login</button>
-            <button id="tab-signup" class="w-1/2 py-3 font-bold text-gray-500" onclick="switchAuthTab('signup')">Sign Up</button>
-        </div>
-        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-b-xl">
-            <div id="username-field" class="hidden"><label class="block text-xs text-gray-400">USERNAME</label><input type="text" id="auth-username" class="w-full bg-black/50 p-2 rounded text-white"></div>
-            <div><label class="block text-xs text-gray-400">GMAIL ADDRESS</label><input type="email" id="auth-email" required class="w-full bg-black/50 p-2 rounded text-white"></div>
-            <div><label class="block text-xs text-gray-400">PASSWORD</label><input type="password" id="auth-password" required class="w-full bg-black/50 p-2 rounded text-white"></div>
-            <button type="button" onclick="sendPasswordReset()" class="text-[10px] text-amber-500 underline">Forgot Password?</button>
-            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2 rounded">Login</button>
-        </form>
-    </div>
-
-    <div id="dashboard-screen" class="hidden space-y-4 mt-6">
-        <div class="card-bg p-4 rounded-lg flex justify-between items-center">
-            <div><h2 class="text-sm font-bold gold-text" id="user-display-name">@username</h2></div>
-            <button onclick="logout()" class="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded">Logout</button>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Investment</p><p id="dashboard-investment" class="text-lg font-bold">$0.00</p></div>
-            <div class="card-bg p-3 rounded-lg"><p class="text-xs text-gray-400">Daily ROI</p><p id="dashboard-roi" class="text-lg font-bold gold-text">$0.00</p></div>
-        </div>
+    <div id="auth-screen" class="mt-10">
+        <h1 class="text-2xl font-bold gold-text text-center mb-6">AurumTrade AI</h1>
         
-        <div class="card-bg p-4 rounded-lg space-y-2">
-            <h3 class="text-xs font-bold uppercase">USDT (BEP20) Wallet</h3>
-            <input type="text" id="wallet-input" class="w-full bg-black/50 p-2 rounded text-xs" placeholder="0x...">
-            <button onclick="updateWallet()" class="w-full bg-zinc-800 text-amber-500 text-xs py-2 rounded">Verify/Update Address</button>
-        </div>
+        <form id="auth-form" onsubmit="handleAuth(event)" class="card-bg p-6 rounded-xl space-y-4">
+            <!-- Username Input -->
+            <div>
+                <label class="text-[10px] text-gray-400">USER ID (Username)</label>
+                <input type="text" id="auth-username" required class="w-full bg-black p-2 rounded border border-zinc-700">
+            </div>
+            
+            <!-- Email Input (Only for Signup) -->
+            <div id="email-field" class="hidden">
+                <label class="text-[10px] text-gray-400">GMAIL ADDRESS</label>
+                <input type="email" id="auth-email" class="w-full bg-black p-2 rounded border border-zinc-700">
+            </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="openModal('deposit-modal')" class="gold-bg text-black font-bold py-3 rounded text-sm">Deposit</button>
-            <button onclick="openModal('withdraw-modal')" class="bg-zinc-800 text-white font-bold py-3 rounded text-sm">Withdraw</button>
-        </div>
-    </div>
+            <div>
+                <label class="text-[10px] text-gray-400">PASSWORD</label>
+                <input type="password" id="auth-password" required class="w-full bg-black p-2 rounded border border-zinc-700">
+            </div>
 
-    <div id="admin-screen" class="hidden space-y-4 mt-6">
-        <h2 class="text-red-500 font-bold text-center">ADMIN CONTROL CENTER</h2>
-        <div id="admin-requests-list" class="space-y-3"></div>
-        <button onclick="logout()" class="w-full bg-red-900 text-white py-2 rounded">Logout</button>
-    </div>
-
-    <div id="deposit-modal" class="hidden fixed inset-0 bg-black/90 p-6 flex items-center justify-center">
-        <div class="card-bg w-full p-6 rounded-xl space-y-4">
-            <h3 class="gold-text font-bold">Deposit USDT (BEP20)</h3>
-            <input type="number" id="deposit-amount" class="w-full bg-black p-2 rounded" placeholder="Amount">
-            <input type="text" id="deposit-txid" class="w-full bg-black p-2 rounded" placeholder="TXID">
-            <button onclick="submitDeposit()" class="w-full gold-bg text-black font-bold py-2 rounded">Submit</button>
-            <button onclick="closeModal('deposit-modal')" class="w-full text-zinc-500">Close</button>
-        </div>
+            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2 rounded">Login</button>
+            
+            <div class="flex justify-between text-[10px]">
+                <button type="button" onclick="toggleMode()" id="mode-text" class="text-amber-500">New User? Register</button>
+                <button type="button" onclick="forgotPassword()" class="text-gray-500">Forgot Password?</button>
+            </div>
+        </form>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", authDomain: "aurumtrade-ai.firebaseapp.com", projectId: "aurumtrade-ai", storageBucket: "aurumtrade-ai.firebasestorage.app", messagingSenderId: "213283112650", appId: "1:213283112650:web:20bcdd734fffe85d17d633" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiPitkH7QdrTigg", 
+            authDomain: "aurumtrade-ai.firebaseapp.com", 
+            projectId: "aurumtrade-ai", 
+            storageBucket: "aurumtrade-ai.firebasestorage.app", 
+            messagingSenderId: "213283112650", 
+            appId: "1:213283112650:web:20bcdd734fffe85d17d633" 
+        };
+
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getDatabase(app);
-        const ADMIN_EMAIL = "krishnafilmsjammu@gmail.com";
+        
+        let isLogin = true;
 
-        window.switchAuthTab = (mode) => {
-            document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login' : 'Register';
-            window.authMode = mode;
+        window.toggleMode = () => {
+            isLogin = !isLogin;
+            document.getElementById('email-field').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('auth-btn').innerText = isLogin ? 'Login' : 'Register';
+            document.getElementById('mode-text').innerText = isLogin ? 'New User? Register' : 'Already have account? Login';
         };
 
         window.handleAuth = (e) => {
             e.preventDefault();
+            const username = document.getElementById('auth-username').value.trim().toLowerCase();
+            const password = document.getElementById('auth-password').value;
             const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(window.authMode === 'signup') {
-                createUserWithEmailAndPassword(auth, email, pass).then(u => {
-                    set(ref(db, `users/${u.user.uid}`), { username: document.getElementById('auth-username').value, email, totalInvestment: 0 });
-                    alert("Registered!");
+
+            if (!isLogin) {
+                // REGISTRATION: Username को की (key) बनाकर डेटा सेव करें
+                get(ref(db, `users/${username}`)).then(snapshot => {
+                    if (snapshot.exists()) {
+                        alert("Username already taken!");
+                    } else {
+                        set(ref(db, `users/${username}`), { password, email, totalInvestment: 0 }).then(() => {
+                            alert("Registered! Now Login.");
+                            toggleMode();
+                        });
+                    }
                 });
             } else {
-                signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
+                // LOGIN: Username से डेटा लाएं और पासवर्ड मैच करें
+                get(ref(db, `users/${username}`)).then(snapshot => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        if (data.password === password) {
+                            alert("Login Successful!");
+                            // यहाँ आप डैशबोर्ड दिखा सकते हैं
+                        } else {
+                            alert("Wrong Password!");
+                        }
+                    } else {
+                        alert("User ID not found!");
+                    }
+                });
             }
         };
 
-        window.sendPasswordReset = () => sendPasswordResetEmail(auth, document.getElementById('auth-email').value).then(() => alert("Link Sent!"));
-        
-        window.updateWallet = () => {
-            const addr = document.getElementById('wallet-input').value;
-            if(!addr.startsWith('0x') || addr.length !== 42) return alert("Invalid BEP20 Address!");
-            set(ref(db, `pendingWalletChanges/${auth.currentUser.uid}`), { newAddress: addr }).then(() => alert("Verification request sent to Admin!"));
+        window.forgotPassword = () => {
+            const username = document.getElementById('auth-username').value;
+            if(!username) return alert("Enter Username first!");
+            get(ref(db, `users/${username}`)).then(s => {
+                if(s.exists()) alert("Password sent to: " + s.val().email);
+                else alert("Username not found!");
+            });
         };
-
-        window.submitDeposit = () => {
-            push(ref(db, 'deposits'), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: document.getElementById('deposit-amount').value, txid: document.getElementById('deposit-txid').value, status: 'pending' }).then(() => alert("Submitted!"));
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                if(user.email === ADMIN_EMAIL) {
-                    document.getElementById('admin-screen').classList.remove('hidden');
-                    onValue(ref(db, 'deposits'), (s) => { /* Render logic here */ });
-                } else {
-                    document.getElementById('dashboard-screen').classList.remove('hidden');
-                    onValue(ref(db, `users/${user.uid}`), (s) => {
-                        const d = s.val();
-                        document.getElementById('user-display-name').innerText = "@" + d.username;
-                        document.getElementById('dashboard-investment').innerText = "$" + d.totalInvestment;
-                    });
-                }
-                document.getElementById('auth-screen').classList.add('hidden');
-            }
-        });
-
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
