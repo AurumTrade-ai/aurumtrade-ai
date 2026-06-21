@@ -61,9 +61,9 @@
                     </button>
                 </div>
             </div>
-            <div id="referral-field" class="hidden">
+            <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">REFERRAL CODE (OPTIONAL)</label>
-                <input type="text" id="auth-ref" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="REF123">
+                <input type="text" id="auth-ref" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none text-amber-400 border-zinc-700" placeholder="e.g. AURUM-rahul">
             </div>
             <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2 rounded text-sm hover:bg-amber-600 transition">Login Account</button>
         </form>
@@ -85,6 +85,16 @@
                 <p class="text-xs text-gray-500" id="user-display-id">@trader</p>
             </div>
             <button onclick="logout()" class="text-xs text-red-500 border border-red-500/30 px-2 py-1 rounded">Logout</button>
+        </div>
+
+        <div class="card-bg p-3 rounded-lg space-y-2">
+            <p class="text-[11px] text-gray-400 font-bold tracking-wider"><i class="fa-solid fa-user-plus gold-text"></i> YOUR REFERRAL LINK</p>
+            <div class="flex justify-between items-center bg-zinc-900 p-2 rounded border border-zinc-800">
+                <span id="referral-code-display" class="text-xs font-mono text-amber-400 font-bold">AURUM-USER</span>
+                <button onclick="copyReferralLink()" class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-1 rounded hover:bg-amber-500 hover:text-black transition">
+                    <i class="fa-regular fa-copy"></i> Copy Link
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -172,7 +182,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // लाइव क्रेडेंशियल्स सेट कर दिए गए हैं
         const firebaseConfig = {
             apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiF",
             authDomain: "aurumtrade-ai.firebaseapp.com",
@@ -187,6 +196,16 @@
 
         window.authMode = 'login';
 
+        // ऑटोमैटिक यूआरएल से रेफरल कोड रीड करना
+        function checkURLReferral() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                window.switchAuthTab('signup');
+                document.getElementById('auth-ref').value = refCode;
+            }
+        }
+
         window.switchAuthTab = function(mode) {
             window.authMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
@@ -196,7 +215,6 @@
             document.getElementById('lastname-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('confirm-password-field').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Verify Gmail';
         };
 
@@ -207,7 +225,7 @@
                 input.type = 'text';
                 icon.className = 'fa-solid fa-eye text-xs';
             } else {
-                input.type === 'password';
+                input.type = 'password';
                 icon.className = 'fa-solid fa-eye-slash text-xs';
             }
         };
@@ -222,6 +240,7 @@
                 const lastName = document.getElementById('auth-lastname').value.trim();
                 const username = document.getElementById('auth-username').value.trim().toLowerCase();
                 const confirmPassword = document.getElementById('auth-confirm-password').value;
+                const appliedRef = document.getElementById('auth-ref').value.trim();
 
                 if (password !== confirmPassword) {
                     alert("Error: Password and Confirm Password do not match!");
@@ -232,7 +251,7 @@
                     .then((userCredential) => {
                         sendEmailVerification(userCredential.user)
                             .then(() => {
-                                localStorage.setItem('temp_user_data', JSON.stringify({firstName, lastName, username}));
+                                localStorage.setItem('temp_user_data', JSON.stringify({firstName, lastName, username, appliedRef}));
                                 document.getElementById('auth-screen').classList.add('hidden');
                                 document.getElementById('signup-otp-screen').classList.remove('hidden');
                                 alert('Verification Link sent to ' + email + '. Please check your inbox!');
@@ -257,11 +276,11 @@
             auth.currentUser.reload().then(() => {
                 if(auth.currentUser.emailVerified) {
                     alert('Email verified successfully!');
-                    const data = JSON.parse(localStorage.getItem('temp_user_data')) || {firstName: "Trader", lastName: "", username: "user"};
+                    const data = JSON.parse(localStorage.getItem('temp_user_data')) || {firstName: "Trader", lastName: "", username: "user", appliedRef: ""};
                     document.getElementById('signup-otp-screen').classList.add('hidden');
                     showDashboard(data.firstName, data.lastName, data.username);
                 } else {
-                    alert('Verification pending. Please check your email inbox.');
+                    alert('Verification pending. Please check your email.');
                 }
             });
         };
@@ -285,7 +304,21 @@
             document.getElementById('dashboard-screen').classList.remove('hidden');
             document.getElementById('user-display-name').innerText = fName + " " + lName;
             document.getElementById('user-display-id').innerText = "@" + uName;
+            
+            // यूज़र आईडी से ऑटोमैटिक यूनिक रेफरल कोड बनाना
+            const customRefCode = "AURUM-" + uName;
+            document.getElementById('referral-code-display').innerText = customRefCode;
         }
+
+        window.copyReferralLink = function() {
+            const refCode = document.getElementById('referral-code-display').innerText;
+            // लाइव वेबसाइट का बेस URL निकालना
+            const currentUrl = window.location.origin + window.location.pathname;
+            const fullInviteLink = currentUrl + "?ref=" + refCode;
+            
+            navigator.clipboard.writeText(fullInviteLink);
+            alert('Your Custom Referral Invite Link Copied:\n' + fullInviteLink);
+        };
 
         window.openDepositModal = function() { document.getElementById('deposit-modal').classList.remove('hidden'); };
         window.closeDepositModal = function() { document.getElementById('deposit-modal').classList.add('hidden'); };
@@ -313,6 +346,7 @@
             if (user && user.emailVerified) {
                 showDashboard(user.email.split('@')[0], "", user.email.split('@')[0]);
             }
+            checkURLReferral();
         });
     </script>
 </body>
