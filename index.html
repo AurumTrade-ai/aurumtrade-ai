@@ -45,21 +45,35 @@
             <!-- Unique Username Field -->
             <div id="username-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">UNIQUE USERNAME</label>
-                <input type="text" id="auth-username" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="rahul9493" lowercase>
+                <input type="text" id="auth-username" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="rahul9493">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label>
                 <input type="email" id="auth-email" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="yourname@gmail.com">
             </div>
+            
+            <!-- Password with Show/Hide Option -->
             <div>
                 <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
-                <input type="password" id="auth-password" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="******">
+                <div class="relative">
+                    <input type="password" id="auth-password" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 pr-10" placeholder="******">
+                    <button type="button" onclick="togglePasswordVisibility('auth-password', 'eye-icon-1')" class="absolute right-3 top-2 text-gray-500 hover:text-white">
+                        <i id="eye-icon-1" class="fa-solid fa-eye-slash text-xs"></i>
+                    </button>
+                </div>
             </div>
-            <!-- Confirm Password Field -->
+            
+            <!-- Confirm Password with Show/Hide Option -->
             <div id="confirm-password-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">CONFIRM PASSWORD</label>
-                <input type="password" id="auth-confirm-password" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="******">
+                <div class="relative">
+                    <input type="password" id="auth-confirm-password" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500 pr-10" placeholder="******">
+                    <button type="button" onclick="togglePasswordVisibility('auth-confirm-password', 'eye-icon-2')" class="absolute right-3 top-2 text-gray-500 hover:text-white">
+                        <i id="eye-icon-2" class="fa-solid fa-eye-slash text-xs"></i>
+                    </button>
+                </div>
             </div>
+
             <div id="referral-field" class="hidden">
                 <label class="block text-xs font-semibold text-gray-400 mb-1">REFERRAL CODE (OPTIONAL)</label>
                 <input type="text" id="auth-ref" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="REF123">
@@ -172,15 +186,14 @@
         let authMode = 'login';
         let tempUser = {};
 
-        // नकली डेटाबेस: मान लेते हैं कि ये यूज़रनेम हमारे सिस्टम में पहले से मौजूद हैं
-        const existingUsernames = ['admin', 'rajesh9493', 'goldtrader', 'aurum_ai'];
+        // डमी यूज़रनेम लिस्ट लाइव डेटाबेस जोड़ने तक
+        const existingUsernames = ['admin', 'rajesh9493', 'goldtrader'];
 
         function switchAuthTab(mode) {
             authMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
             document.getElementById('tab-signup').className = mode === 'signup' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
             
-            // शो या हाइड करना न्यू फील्ड्स को
             document.getElementById('firstname-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('lastname-field').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('username-field').style.display = mode === 'signup' ? 'block' : 'none';
@@ -188,6 +201,19 @@
             document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
             
             document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Verify Gmail';
+        }
+
+        // पासवर्ड शो/हाइड करने का फंक्शन
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye text-xs';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye-slash text-xs';
+            }
         }
 
         function handleAuth(e) {
@@ -202,31 +228,26 @@
                 const confirmPassword = document.getElementById('auth-confirm-password').value;
                 
                 if(!firstName || !lastName || !username) {
-                    alert("Error: Please fill all the name fields!");
+                    alert("Error: Please fill all fields!");
                     return;
                 }
 
-                // 1. यूनिक यूज़रनेम चेक करना
                 if (existingUsernames.includes(username)) {
-                    alert("Error: Username '" + username + "' is already taken! Please choose a different unique username.");
+                    alert("Error: Username '" + username + "' is already taken!");
                     return;
                 }
                 
-                // 2. पासवर्ड मैच चेक करना
+                // पासवर्ड मिसमैच फिक्स: अब यह आगे बढ़ने से रोकेगा
                 if (password !== confirmPassword) {
                     alert("Error: Password and Confirm Password do not match!");
-                    return;
+                    return; 
                 }
                 
-                // डेटा को टेम्पररी स्टोर करना
                 tempUser = { firstName, lastName, username, email };
                 
-                // ओटीपी स्क्रीन दिखाना
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('signup-otp-screen').classList.remove('hidden');
-                alert('Success: Code simulated. Enter any 6 digits to verify!');
             } else {
-                // लॉगिन सिमुलेशन
                 showDashboard("TRADER", "User", email.split('@')[0]);
             }
         }
@@ -236,8 +257,6 @@
             if(otpInput.length === 6) {
                 alert('Account verified successfully!');
                 document.getElementById('signup-otp-screen').classList.add('hidden');
-                
-                // नया यूज़र डेटा डैशबोर्ड पर पास करना
                 showDashboard(tempUser.firstName, tempUser.lastName, tempUser.username);
             } else {
                 alert('Please enter a valid 6-digit OTP');
@@ -247,8 +266,6 @@
         function showDashboard(fName, lName, uName) {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            
-            // नाम और यूज़रनेम डैशबोर्ड पर सेट करना
             document.getElementById('user-display-name').innerText = fName + " " + lName;
             document.getElementById('user-display-id').innerText = "@" + uName;
         }
@@ -268,14 +285,14 @@
         function openWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('hidden'); }
         function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.add('hidden'); }
 
-        function sendOTP() { alert('OTP sent to your registered Gmail successfully!'); }
+        function sendOTP() { alert('OTP sent successfully!'); }
         function confirmWithdraw() {
             const otp = document.getElementById('withdraw-otp').value;
             if(otp.length === 6) {
-                alert('Withdraw request submitted successfully!');
+                alert('Withdraw request submitted!');
                 closeWithdrawModal();
             } else {
-                alert('Please enter a valid 6-digit OTP');
+                alert('Please enter valid 6-digit OTP');
             }
         }
     </script>
