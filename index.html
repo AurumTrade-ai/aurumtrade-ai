@@ -72,7 +72,7 @@
     <div id="signup-otp-screen" class="hidden space-y-6 mt-10 text-center">
         <div class="card-bg p-6 rounded-xl shadow-lg space-y-4">
             <h2 class="text-xl font-bold gold-text"><i class="fa-solid fa-envelope-shield"></i> Verify Your Gmail</h2>
-            <p class="text-xs text-gray-400">We have sent a security verification link/code to your registered Gmail address via Firebase. Please complete verification to login.</p>
+            <p class="text-xs text-gray-400">We have sent a security verification link to your registered Gmail address via Firebase. Please complete verification to login.</p>
             <button onclick="checkEmailVerificationStatus()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">I Verified my Email (Proceed)</button>
             <p class="text-xs text-gray-500">Didn't receive it? <span onclick="resendVerificationEmail()" class="text-amber-500 cursor-pointer underline">Resend Link</span></p>
         </div>
@@ -169,11 +169,10 @@
     </div>
 
     <script type="module">
-        // Firebase लाइव स्क्रिप्ट इम्पोर्ट
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // आपके स्क्रीनशॉट से लाइव कीज़ का इंटीग्रेशन
+        // लाइव क्रेडेंशियल्स सेट कर दिए गए हैं
         const firebaseConfig = {
             apiKey: "AIzaSyAKdE-B-o74-r-jTtPXgiF",
             authDomain: "aurumtrade-ai.firebaseapp.com",
@@ -188,7 +187,6 @@
 
         window.authMode = 'login';
 
-        // ग्लोबल स्कोप में फंक्शंस को सेट करना ताकि HTML बटन्स काम कर सकें
         window.switchAuthTab = function(mode) {
             window.authMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
@@ -209,7 +207,7 @@
                 input.type = 'text';
                 icon.className = 'fa-solid fa-eye text-xs';
             } else {
-                input.type = 'password';
+                input.type === 'password';
                 icon.className = 'fa-solid fa-eye-slash text-xs';
             }
         };
@@ -230,27 +228,24 @@
                     return;
                 }
 
-                // Firebase लाइव ईमेल रजिस्ट्रेशन
                 createUserWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
-                        // असली ईमेल वेरिफिकेशन लिंक ट्रिगर करना
                         sendEmailVerification(userCredential.user)
                             .then(() => {
                                 localStorage.setItem('temp_user_data', JSON.stringify({firstName, lastName, username}));
                                 document.getElementById('auth-screen').classList.add('hidden');
                                 document.getElementById('signup-otp-screen').classList.remove('hidden');
-                                alert('Verification Link sent to ' + email + '. Please check your inbox/spam folder!');
+                                alert('Verification Link sent to ' + email + '. Please check your inbox!');
                             });
                     })
                     .catch((error) => { alert("Registration Error: " + error.message); });
             } else {
-                // Firebase लाइव लॉगिन
                 signInWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         if(userCredential.user.emailVerified) {
                             showDashboard(userCredential.user.email.split('@')[0], "", userCredential.user.email.split('@')[0]);
                         } else {
-                            alert("Please verify your email first! Verification link was sent to your inbox.");
+                            alert("Please verify your email first!");
                             auth.signOut();
                         }
                     })
@@ -266,7 +261,7 @@
                     document.getElementById('signup-otp-screen').classList.add('hidden');
                     showDashboard(data.firstName, data.lastName, data.username);
                 } else {
-                    alert('Verification pending. Please click the link inside the email sent by Firebase.');
+                    alert('Verification pending. Please check your email inbox.');
                 }
             });
         };
@@ -292,7 +287,6 @@
             document.getElementById('user-display-id').innerText = "@" + uName;
         }
 
-        // मोडल फंक्शंस
         window.openDepositModal = function() { document.getElementById('deposit-modal').classList.remove('hidden'); };
         window.closeDepositModal = function() { document.getElementById('deposit-modal').classList.add('hidden'); };
         window.openWithdrawModal = function() { document.getElementById('withdraw-modal').classList.remove('hidden'); };
@@ -311,11 +305,10 @@
                 alert('Please enter both Amount and TXID Hash!');
                 return;
             }
-            alert('Deposit Request of $' + amt + ' with TXID ' + txid + ' successfully submitted to Admin dashboard!');
+            alert('Deposit Request submitted successfully!');
             window.closeDepositModal();
         };
 
-        // सेशन की लाइव चेकिंग
         onAuthStateChanged(auth, (user) => {
             if (user && user.emailVerified) {
                 showDashboard(user.email.split('@')[0], "", user.email.split('@')[0]);
