@@ -4,171 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AurumTrade AI</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #121212; color: #ffffff; padding: 15px; }
-        
-        /* Header Styling */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #2a2a2a; }
-        .logo { color: #ffd700; font-weight: bold; font-size: 20px; }
-        .wallet-badge { background-color: #1e1e1e; padding: 8px 12px; border-radius: 20px; font-size: 14px; border: 1px solid #ffd700; }
-        
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .stat-card { background-color: #1e1e1e; padding: 15px; border-radius: 10px; border: 1px solid #2a2a2a; }
-        .stat-card p { color: #888; font-size: 12px; margin-bottom: 5px; }
-        .stat-card h3 { color: #ffd700; font-size: 18px; }
-
-        /* Capping Progress Bar */
-        .capping-box { background-color: #1e1e1e; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #2a2a2a; }
-        .capping-title { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; color: #ccc; }
-        .progress-bar-bg { background-color: #333; height: 12px; border-radius: 6px; overflow: hidden; }
-        .progress-bar-fill { background: linear-gradient(90deg, #ffd700, #ffa500); height: 100%; width: 24%; }
-
-        /* Action Buttons */
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
-        .btn-deposit { background-color: #ffd700; color: #000; }
-        .btn-withdraw { background-color: #1e1e1e; color: #ffd700; border: 1px solid #ffd700; }
-
-        /* Modal (Popup) Styling */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
-        .modal-content { background-color: #1e1e1e; padding: 20px; border-radius: 15px; border: 1px solid #ffd700; width: 100%; max-width: 400px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .modal-title { color: #ffd700; font-size: 18px; font-weight: bold; }
-        .close-btn { color: #fff; font-size: 24px; cursor: pointer; }
-        
-        /* Input & Forms */
-        .address-box { background-color: #2a2a2a; padding: 10px; border-radius: 8px; font-size: 12px; word-break: break-all; border: 1px dashed #ffd700; margin-bottom: 15px; color: #ffd700; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 10px; background-color: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; }
-        .form-group input:focus { border-color: #ffd700; outline: none; }
-        .submit-btn { width: 100%; padding: 12px; background-color: #ffd700; color: #000; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .btn-otp { background-color: #444; color: #fff; border: 1px solid #ffd700; padding: 8px; border-radius: 6px; font-size: 11px; cursor: pointer; margin-top: 5px; width: 100%; }
+        body { background-color: #0d0d0d; color: #ffffff; font-family: 'Poppins', sans-serif; }
+        .gold-text { color: #f39c12; }
+        .gold-bg { background-color: #f39c12; }
+        .card-bg { background-color: #1a1a1a; border: 1px solid #2d2d2d; }
     </style>
 </head>
-<body>
+<body class="p-4 max-w-md mx-auto">
 
-    <!-- Top Header -->
-    <div class="header">
-        <div class="logo">AurumTrade AI</div>
-        <div class="wallet-badge">💰 $0.00 USDT</div>
-    </div>
+    <!-- ================= AUTH SECTION (SIGN UP / LOGIN) ================= -->
+    <div id="auth-screen" class="space-y-6 mt-10">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold gold-text">AurumTrade AI</h1>
+            <p class="text-gray-400 text-sm mt-1">Secure Institutional Trading Platform</p>
+        </div>
 
-    <!-- Stats Section -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <p>Total Investment</p>
-            <h3>$1,000.00</h3>
+        <!-- Toggle Tabs -->
+        <div class="flex border-b border-gray-700">
+            <button id="tab-login" class="w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text" onclick="switchAuthTab('login')">Login</button>
+            <button id="tab-signup" class="w-1/2 py-2 text-center font-bold text-gray-500" onclick="switchAuthTab('signup')">Sign Up</button>
         </div>
-        <div class="stat-card">
-            <p>Daily ROI (0.4%)</p>
-            <h3>$4.00</h3>
-        </div>
-        <div class="stat-card">
-            <p>Binary Bonus</p>
-            <h3>$50.00</h3>
-        </div>
-        <div class="stat-card">
-            <p>Total Earned</p>
-            <h3>$240.00</h3>
-        </div>
-    </div>
 
-    <!-- 3x Capping Limit -->
-    <div class="capping-box">
-        <div class="capping-title">
-            <span>3x Earnings Limit (24%)</span>
-            <span>$240 / $3000 USDT</span>
-        </div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill"></div>
-        </div>
-    </div>
-
-    <!-- Quick Buttons -->
-    <div class="btn-group">
-        <button class="btn btn-deposit" onclick="openModal('depositModal')">📥 Deposit</button>
-        <button class="btn btn-withdraw" onclick="openModal('withdrawModal')">📤 Withdraw</button>
-    </div>
-
-    <!-- Deposit Modal (Popup Form) -->
-    <div class="modal" id="depositModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">📥 Deposit USDT (BEP-20)</div>
-                <div class="close-btn" onclick="closeModal('depositModal')">&times;</div>
+        <!-- Auth Form -->
+        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4 card-bg p-6 rounded-xl shadow-lg">
+            <div id="name-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">FULL NAME</label>
+                <input type="text" id="auth-name" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="John Doe">
             </div>
-            <label style="font-size: 12px; color: #aaa; display:block; margin-bottom:5px;">Admin Wallet Address:</label>
-            <div class="address-box">0x71C...YOUR_BEP20_WALLET_ADDRESS...319</div>
-            <form onsubmit="submitDeposit(event)">
-                <div class="form-group">
-                    <label>Amount (USDT)</label>
-                    <input type="number" id="depAmount" placeholder="Minimum 10 USDT" required min="10">
-                </div>
-                <div class="form-group">
-                    <label>Transaction ID / Hash (TXID)</label>
-                    <input type="text" id="txid" placeholder="Paste your TXID here" required>
-                </div>
-                <button type="submit" class="submit-btn">Submit Deposit Request</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Withdraw Modal (Popup Form with OTP) -->
-    <div class="modal" id="withdrawModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">📤 Withdraw USDT (BEP-20)</div>
-                <div class="close-btn" onclick="closeModal('withdrawModal')">&times;</div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 mb-1">GMAIL ADDRESS</label>
+                <input type="email" id="auth-email" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="yourname@gmail.com">
             </div>
-            <form onsubmit="submitWithdraw(event)">
-                <div class="form-group">
-                    <label>Withdraw Amount (USDT)</label>
-                    <input type="number" id="withAmount" placeholder="Enter amount" required min="5">
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
+                <input type="password" id="auth-password" required class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="******">
+            </div>
+            <div id="referral-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-400 mb-1">REFERRAL CODE (OPTIONAL)</label>
+                <input type="text" id="auth-ref" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm focus:outline-none focus:border-amber-500" placeholder="REF123">
+            </div>
+            <button type="submit" id="auth-btn" class="w-full gold-bg text-black font-bold py-2 rounded text-sm hover:bg-amber-600 transition">Login Account</button>
+        </form>
+    </div>
+
+    <!-- ================= MAIN DASHBOARD SECTION ================= -->
+    <div id="dashboard-screen" class="hidden space-y-4">
+        <!-- Header -->
+        <div class="flex justify-between items-center bg-zinc-900 p-3 rounded-lg border border-zinc-800">
+            <div>
+                <h2 class="text-sm font-bold gold-text" id="user-display-name">Welcome Trader</h2>
+                <p class="text-xs text-gray-500">ID: AT-9493</p>
+            </div>
+            <button onclick="logout()" class="text-xs text-red-500 border border-red-500/30 px-2 py-1 rounded">Logout</button>
+        </div>
+
+        <!-- Investment & ROI Cards -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="card-bg p-3 rounded-lg">
+                <p class="text-xs text-gray-400">Total Investment</p>
+                <p class="text-lg font-bold text-white">$1,000.00</p>
+            </div>
+            <div class="card-bg p-3 rounded-lg">
+                <p class="text-xs text-gray-400">Daily ROI (0.4%)</p>
+                <p class="text-lg font-bold gold-text">$4.00</p>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL INCOME SECTION ================= -->
+        <div class="card-bg p-4 rounded-lg space-y-2">
+            <h3 class="text-xs font-bold text-gray-400 tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-network-wired gold-text"></i> LEVEL INCOME DASHBOARD
+            </h3>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
+                <div class="bg-zinc-900 p-2 rounded border border-zinc-800">
+                    <p class="text-gray-500 font-medium">Level 1 (5%)</p>
+                    <p class="font-bold text-white mt-1" id="level-1-income">$0.00</p>
                 </div>
-                <div class="form-group">
-                    <label>Your USDT BEP-20 Wallet Address</label>
-                    <input type="text" id="userAddress" placeholder="0x..." required>
+                <div class="bg-zinc-900 p-2 rounded border border-zinc-800">
+                    <p class="text-gray-500 font-medium">Level 2 (3%)</p>
+                    <p class="font-bold text-white mt-1" id="level-2-income">$0.00</p>
                 </div>
-                <div class="form-group" style="border-top: 1px solid #333; padding-top: 10px;">
-                    <label>Security Verification</label>
-                    <button type="button" class="btn-otp" onclick="alert('OTP sent to your registered Gmail!')">📩 Send OTP to Gmail</button>
-                    <input type="text" id="otpCode" placeholder="Enter 6-Digit OTP" required style="margin-top: 10px;">
+                <div class="bg-zinc-900 p-2 rounded border border-zinc-800">
+                    <p class="text-gray-500 font-medium">Level 3 (2%)</p>
+                    <p class="font-bold text-white mt-1" id="level-3-income">$0.00</p>
                 </div>
-                <button type="submit" class="submit-btn" style="background-color: #ffa500;">Confirm & Withdraw</button>
-            </form>
+            </div>
+        </div>
+
+        <!-- Deposit Section with Admin Wallet -->
+        <div class="card-bg p-4 rounded-lg space-y-3">
+            <h3 class="text-sm font-bold gold-text"><i class="fa-solid fa-wallet"></i> Deposit USDT (BEP-20)</h3>
+            <div class="bg-zinc-900 p-3 rounded border border-zinc-800 space-y-1">
+                <p class="text-[10px] text-gray-500 font-bold">ADMIN WALLET ADDRESS</p>
+                <div class="flex justify-between items-center bg-black p-2 rounded border border-zinc-700">
+                    <!-- आपका लाइव वॉलेट एड्रेस यहाँ जोड़ दिया गया है -->
+                    <span id="wallet-address" class="text-xs font-mono text-amber-400 break-all select-all">0xc94BaDA557310679b1e00F5125Ef65dAe05bebd5</span>
+                    <button onclick="copyWallet()" class="text-xs text-gray-400 hover:text-white ml-2"><i class="fa-regular fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            <button onclick="alert('Deposit Form Coming Soon')" class="gold-bg text-black font-bold py-3 rounded-lg text-sm shadow-md">Deposit</button>
+            <button onclick="openWithdrawModal()" class="bg-zinc-800 border border-zinc-700 text-white font-bold py-3 rounded-lg text-sm">Withdraw</button>
         </div>
     </div>
 
-    <!-- JavaScript Controls -->
+    <!-- ================= WITHDRAW MODAL WITH OTP ================= -->
+    <div id="withdraw-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="card-bg w-full max-w-sm p-6 rounded-xl relative space-y-4">
+            <button onclick="closeWithdrawModal()" class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl">&times;</button>
+            <h3 class="text-lg font-bold gold-text"><i class="fa-solid fa-upload"></i> Withdraw USDT (BEP-20)</h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Withdraw Amount (USDT)</label>
+                    <input type="number" id="withdraw-amount" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white" placeholder="Min $10">
+                </div>
+                <button onclick="sendOTP()" class="w-full bg-zinc-800 border border-zinc-700 text-xs text-amber-400 py-2 rounded">Send OTP to Gmail</button>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Enter 6-Digit OTP</label>
+                    <input type="text" id="withdraw-otp" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white text-center tracking-widest" placeholder="000000">
+                </div>
+                <button onclick="confirmWithdraw()" class="w-full gold-bg text-black font-bold py-2 rounded text-sm">Confirm & Withdraw</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
+        let authMode = 'login';
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            document.getElementById('tab-login').className = mode === 'login' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
+            document.getElementById('tab-signup').className = mode === 'signup' ? 'w-1/2 py-2 text-center font-bold border-b-2 border-amber-500 gold-text' : 'w-1/2 py-2 text-center font-bold text-gray-500';
+            document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+            document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
+            document.getElementById('auth-btn').innerText = mode === 'login' ? 'Login Account' : 'Register & Create Account';
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            // टेंपरेरी लॉगिन सिमुलेशन
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            document.getElementById('user-display-name').innerText = email.split('@')[0].toUpperCase();
         }
 
-        function submitDeposit(event) {
-            event.preventDefault();
-            const amount = document.getElementById('depAmount').value;
-            const tx = document.getElementById('txid').value;
-            alert(`Success!\nDeposit of $${amount} USDT (TXID: ${tx}) submitted for Admin verification.`);
-            closeModal('depositModal');
+        function logout() {
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
         }
 
-        function submitWithdraw(event) {
-            event.preventDefault();
-            const amount = document.getElementById('withAmount').value;
-            const address = document.getElementById('userAddress').value;
-            const otp = document.getElementById('otpCode').value;
-            alert(`Success!\nWithdraw request for $${amount} USDT to address ${address} has been recorded.\nStatus: Pending Admin Approval.`);
-            closeModal('withdrawModal');
+        function copyWallet() {
+            const address = document.getElementById('wallet-address').innerText;
+            navigator.clipboard.writeText(address);
+            alert('Admin Wallet Address Copied!');
+        }
+
+        function openWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('hidden'); }
+        function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.add('hidden'); }
+
+        function sendOTP() {
+            alert('OTP sent to your registered Gmail successfully!');
+        }
+
+        function confirmWithdraw() {
+            const otp = document.getElementById('withdraw-otp').value;
+            if(otp.length === 6) {
+                alert('Withdraw request submitted successfully!');
+                closeWithdrawModal();
+            } else {
+                alert('Please enter a valid 6-digit OTP');
+            }
         }
     </script>
-
 </body>
 </html>
